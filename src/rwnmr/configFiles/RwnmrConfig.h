@@ -1,12 +1,12 @@
+
 #ifndef RWNMR_CONFIG_H_
 #define RWNMR_CONFIG_H_
 
-#include "configFiles_defs.h"
 #include "BaseConfig.h"
-
+#include "configFiles_defs.h"
 using namespace std;
-
-class RwnmrConfig : public BaseConfig
+typedef unsigned int uint;
+class RwnmrConfig 
 {
 private:
     string NAME;
@@ -33,111 +33,87 @@ private:
     uint HISTOGRAMS;  
     uint HISTOGRAM_SIZE;
     string HISTOGRAM_SCALE;
+
+    // MAP PARAMETERS
     double MAP_TIME;
-    uint MAP_STEPS;
-    double MAP_FILTER;
+    int MAP_STEPS;
+    int MAP_FILTER;
     double MAP_TOL;
-    uint MAP_ITERATIONS;
+    int MAP_ITERATIONS;
 
-    // -- OPENMP MODE
+    // OPENMP PARAMETERS
     bool OPENMP_USAGE;
-    uint OPENMP_THREADS;
+    int OPENMP_THREADS;
 
-    // -- CUDA/GPU PARAMETERS
+    // CUDA/GPU PARAMETERS
     bool GPU_USAGE;
-    uint BLOCKS;
-    uint THREADSPERBLOCK;
-    uint ECHOESPERKERNEL;
-    uint MAX_RWSTEPS;
+    int BLOCKS;
+    int THREADSPERBLOCK;
+    int ECHOESPERKERNEL;
+    int MAX_RWSTEPS;
     bool REDUCE_IN_GPU;
-    
+
 public:
-    // default constructors
-    RwnmrConfig() : BaseConfig(),
-                    MAP_TIME(0.0),
-                    MAP_STEPS(0),
-                    MAP_FILTER(0),
-                    MAP_TOL(0.01),
-                    MAP_ITERATIONS(1),
-                    SAVE_IMG_INFO(false), 
-                    SAVE_BINIMG(false), 
-                    SAVE_WALKERS(false), 
-                    OPENMP_USAGE(true), 
-                    OPENMP_THREADS(omp_get_max_threads()),
-                    GPU_USAGE(true), 
-                    REDUCE_IN_GPU(true),
-                    WALKER_SAMPLES(1)
-    {};
+    bool ready;
+    // Constructors
+    RwnmrConfig();
 
-    RwnmrConfig(const string configFile, const string croot);
-
-    //copy constructors
-    RwnmrConfig(const RwnmrConfig &otherConfig);    
-
-    // default destructor
-    virtual ~RwnmrConfig()
-    {
-        // cout << "OMPLoopEnabler object destroyed succesfully" << endl;
-    } 
-
+    // Methods
     vector<string> checkConfig();
-    void readConfigFile(const string configFile);
-    
-    // Read methods
-    // -- RW Params
+    void readConfigFile(const string &nameContent, const string &walkersContent, const string &walkerSamplesContent,
+                        const string &walkersPlacementContent, const string &placementDeviationContent,
+                        const string &rhoTypeContent, const string &rhoContent, const string &stepsPerEchoContent,
+                        const string &giromagneticRatioContent, const string &giromagneticUnitContent,
+                        const string &d0Content, const string &bulkTimeContent, const string &seedContent,
+                        const string &bcContent, const string &saveImgInfoContent, const string &saveBinImgContent,
+                        const string &saveWalkersContent, const string &histogramsContent,
+                        const string &histogramSizeContent, const string &histogramScaleContent,
+                        const string &mapTimeContent, const string &mapStepsContent, const string &mapFilterContent,
+                        const string &mapTolContent, const string &mapIterationsContent,
+                        const string &openMPUsageContent, const string &openMPThreadsContent,
+                        const string &gpuUsageContent, const string &blocksContent,
+                        const string &threadsPerBlockContent, const string &echoesPerKernelContent,
+                        const string &reduceInGPUContent, const string &maxRWStepsContent);
+
     void readName(string s);
     void readWalkers(string s);
     void readWalkerSamples(string s);
     void readWalkersPlacement(string s);
     void readPlacementDeviation(string s);
     void readRhoType(string s);
-    void readRho(string s); 
-    void readD0(string s); 
-    void readGiromagneticRatio(string s);    
-    void readGiromagneticUnit(string s);    
+    void readRho(string s);
+    void readGiromagneticRatio(string s);
+    void readGiromagneticUnit(string s);
+    void readD0(string s);
     void readBulkTime(string s);
     void readStepsPerEcho(string s);
     void readSeed(string s);
     void readBC(string s);
-
-    // Histograms
-    void readHistograms(string s);  
+    void readSaveImgInfo(string s);
+    void readSaveBinImg(string s);
+    void readSaveWalkers(string s);
+    void readHistograms(string s);
     void readHistogramSize(string s);
     void readHistogramScale(string s);
     void readMapTime(string s);
     void readMapSteps(string s);
     void readMapFilter(string s);
-    void readMapTol(string s);  
-    void readMapIterations(string s);  
-
-    // -- OpenMP
+    void readMapTol(string s);
+    void readMapIterations(string s);
     void readOpenMPUsage(string s);
     void readOpenMPThreads(string s);
-
-    // -- CUDA/GPU Params
     void readGPUUsage(string s);
     void readBlocks(string s);
     void readThreadsPerBlock(string s);
     void readEchoesPerKernel(string s);
     void readMaxRWSteps(string s);
     void readReduceInGPU(string s);
+
     
-    // -- MPI Params
-    void readBitBlockBatchesSize(string s);
-    void readBitBlockPropertiesSize(string s);
-    void readNMRT2Size(string s);
-    void readStartTag(string s);
-    void readBitBlockTag(string s);
-    void readBatchTag(string s);
-    void readT2Tag(string s);
-    void readEndTag(string s);
-
-    // -- Saving
-    void readSaveImgInfo(string s);
-    void readSaveBinImg(string s);
-    void readSaveWalkers(string s);
-
     // Set methods
+    
+    void setReady(bool _b){ this->ready = _b; }
+    bool getReady(){ return this->ready; }
     // -- RW Params
     void setName(string s){ this->NAME = s;}
     void setWalkers(uint s){ this->WALKERS = s;}
@@ -226,4 +202,4 @@ public:
     bool getReduceInGPU(){ return this->REDUCE_IN_GPU;}
 };
 
-#endif
+#endif // RWNMR_CONFIG_H_

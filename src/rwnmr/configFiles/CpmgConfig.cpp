@@ -12,20 +12,17 @@
 using namespace std;
 
 // default constructors
-CpmgConfig::CpmgConfig(const string configFile, 
-                         const string croot) : BaseConfig(croot, configFile),
-                                               APPLY_BULK(false), 
-                                               TIME_VERBOSE(false), 
-                                               INTERPOLATE_FIELD(false),
-                                               USE_T2_LOGSPACE(false), 
-                                               SAVE_MODE(false)
+CpmgConfig::CpmgConfig() : 
+    APPLY_BULK(false), 
+    TIME_VERBOSE(false), 
+    INTERPOLATE_FIELD(false),
+    USE_T2_LOGSPACE(true), 
+    SAVE_MODE(true)
 {
-    string defaultFile = (*this).getProjectRoot() + CPMG_CONFIG_DEFAULT;
-    if(configFile != (defaultFile)) (*this).readConfigFile(configFile);
-    else (*this).readConfigFile(defaultFile);	
+    (*this).readConfigFile("false", "3000.0", "image-based", "false", "uniform", "10.0", "2", "${path-to-bin}", "false", "0.1", "100000.0", "true", "256", "-4", "2", "512", "0", "0.00", "true", "false", "false", "false", "false", "false");
 }
 
-//copy constructors
+// copy constructors
 CpmgConfig::CpmgConfig(const CpmgConfig &otherConfig) 
 {
     // --- Physical attributes
@@ -59,91 +56,41 @@ CpmgConfig::CpmgConfig(const CpmgConfig &otherConfig)
     this->SAVE_HISTOGRAM_LIST = otherConfig.SAVE_HISTOGRAM_LIST;
 }
 
-vector<string> CpmgConfig::checkConfig()
-{
-    vector<string> missingParameters;
-    bool validState = true;
-
-    validState &= (*this).checkItem((*this).getObservationTime() > 0.0, (string)"OBS_TIME", missingParameters);
-    
-    vector<string> methods = {"image-based", "histogram"};
-    validState &= (*this).checkItem(std::find(methods.begin(), methods.end(), (*this).getMethod()) != methods.end(), 
-                      (string)"METHOD", missingParameters);
-    
-    vector<string> rfs = {"none", "uniform", "import"};
-    validState &= (*this).checkItem(std::find(rfs.begin(), rfs.end(), (*this).getResidualField()) != rfs.end(), 
-                      (string)"RESIDUAL_FIELD", missingParameters);
-
-    validState &= (*this).checkItem(((*this).getGradientDirection() == 0 or (*this).getGradientDirection() == 1 or (*this).getGradientDirection() == 2), 
-                      (string)"GRADIENT_DIRECTION", missingParameters);
-
-    validState &= (*this).checkItem((*this).getMinT2() > 0.0, (string)"MIN_T2", missingParameters);
-    validState &= (*this).checkItem((*this).getMaxT2() > 0.0, (string)"MAX_T2", missingParameters);
-    validState &= (*this).checkItem((*this).getNumT2Bins() > 0, (string)"NUM_T2_BINS", missingParameters);
-    validState &= (*this).checkItem((*this).getNumLambdas() > 0, (string)"NUM_LAMBDAS", missingParameters);
-    validState &= (*this).checkItem((*this).getPruneNum() >= 0, (string)"PRUNE_NUM", missingParameters);
-    
-    (*this).setReady(validState);   
-    return missingParameters;
-}
 
 // read config file
-void CpmgConfig::readConfigFile(const string configFile)
+void CpmgConfig::readConfigFile(const string &applyBulkContent, const string &obsTimeContent, 
+                                const string &methodContent, const string &timeVerboseContent, const string &residualFieldContent, 
+                                const string &gradientValueContent, const string &gradientDirectionContent, const string &pathToFieldContent, 
+                                const string &interpolateFieldContent, const string &minT2Content, const string &maxT2Content, 
+                                const string &useT2LogspaceContent, const string &numT2BinsContent, const string &minLambdaContent, 
+                                const string &maxLambdaContent, const string &numLambdasContent, const string &pruneNumContent, 
+                                const string &noiseAmpContent, const string &saveModeContent, const string &saveT2Content, 
+                                const string &saveWalkersContent, const string &saveDecayContent, const string &saveHistogramContent, 
+                                const string &saveHistogramListContent)
 {
-	ifstream fileObject;
-    fileObject.open(configFile, ios::in);
-    if (fileObject.fail())
-    {
-        cout << "Could not open cpmg config file from disc." << endl;
-        cout << "Check path: " << configFile << endl;
-        exit(1);
-    }
-
-    string line;
-    while(fileObject)
-    {
-    	getline(fileObject, line);
-    	// cout << line << endl;
-
-    	string s = line;
-    	string delimiter = ": ";
-		size_t pos = 0;
-		string token, content;
-    	while ((pos = s.find(delimiter)) != std::string::npos) 
-    	{
-			token = s.substr(0, pos);
-			content = s.substr(pos + delimiter.length(), s.length());
-			s.erase(0, pos + delimiter.length());
-
-			if(token == "APPLY_BULK") (*this).readApplyBulk(content);  
-			else if(token == "OBS_TIME") (*this).readObservationTime(content);  
-            else if(token == "METHOD") (*this).readMethod(content);
-            else if(token == "TIME_VERBOSE") (*this).readTimeVerbose(content);
-            else if(token == "RESIDUAL_FIELD") (*this).readResidualField(content);
-            else if(token == "GRADIENT_VALUE") (*this).readGradientValue(content);
-            else if(token == "GRADIENT_DIRECTION") (*this).readGradientDirection(content);
-            else if(token == "PATH_TO_FIELD") (*this).readPathToField(content);    
-            else if(token == "INTERPOLATE_FIELD") (*this).readInterpolateField(content);        
-            else if(token == "MIN_T2") (*this).readMinT2(content);
-            else if(token == "MAX_T2") (*this).readMaxT2(content);
-            else if(token == "USE_T2_LOGSPACE") (*this).readUseT2Logspace(content);
-            else if(token == "NUM_T2_BINS") (*this).readNumT2Bins(content);
-            else if(token == "MIN_LAMBDA") (*this).readMinLambda(content);
-            else if(token == "MAX_LAMBDA") (*this).readMaxLambda(content);
-            else if(token == "NUM_LAMBDAS") (*this).readNumLambdas(content);
-            else if(token == "PRUNE_NUM") (*this).readPruneNum(content);
-            else if(token == "NOISE_AMP") (*this).readNoiseAmp(content);                      
-            else if(token == "SAVE_MODE") (*this).readSaveMode(content);
-            else if(token == "SAVE_T2") (*this).readSaveT2(content);
-            else if(token == "SAVE_WALKERS") (*this).readSaveWalkers(content);
-            else if(token == "SAVE_DECAY") (*this).readSaveDecay(content);
-            else if(token == "SAVE_HISTOGRAM") (*this).readSaveHistogram(content);
-            else if(token == "SAVE_HISTOGRAM_LIST") (*this).readSaveHistogramList(content); 
-			
-		}
-    } 
-
-    fileObject.close();
+    (*this).readApplyBulk(applyBulkContent);
+    (*this).readObservationTime(obsTimeContent);
+    (*this).readMethod(methodContent);
+    (*this).readTimeVerbose(timeVerboseContent);
+    (*this).readResidualField(residualFieldContent);
+    (*this).readGradientValue(gradientValueContent);
+    (*this).readGradientDirection(gradientDirectionContent);
+    (*this).readInterpolateField(interpolateFieldContent);
+    (*this).readMinT2(minT2Content);
+    (*this).readMaxT2(maxT2Content);
+    (*this).readUseT2Logspace(useT2LogspaceContent);
+    (*this).readNumT2Bins(numT2BinsContent);
+    (*this).readMinLambda(minLambdaContent);
+    (*this).readMaxLambda(maxLambdaContent);
+    (*this).readNumLambdas(numLambdasContent);
+    (*this).readPruneNum(pruneNumContent);
+    (*this).readNoiseAmp(noiseAmpContent);
+    (*this).readSaveMode(saveModeContent);
+    (*this).readSaveT2(saveT2Content);
+    (*this).readSaveWalkers(saveWalkersContent);
+    (*this).readSaveDecay(saveDecayContent);
+    (*this).readSaveHistogram(saveHistogramContent);
+    (*this).readSaveHistogramList(saveHistogramListContent);
 }
 
 void CpmgConfig::readApplyBulk(string s)
@@ -171,7 +118,7 @@ void CpmgConfig::readMethod(string s)
 
 void CpmgConfig::readResidualField(string s)
 {
-    if(s == "uniform" or s == "import") (*this).setResidualField(s);
+    if(s == "uniform" || s == "import") (*this).setResidualField(s);
     else (*this).setResidualField("none");
 }
 
@@ -182,16 +129,11 @@ void CpmgConfig::readGradientValue(string s)
 
 void CpmgConfig::readGradientDirection(string s)
 {
-    if(s == "0" or s == "x")  (*this).setGradientDirection(0);
-    else if(s == "1" or s == "y") (*this).setGradientDirection(1);
+    if(s == "0" || s == "x")  (*this).setGradientDirection(0);
+    else if(s == "1" || s == "y") (*this).setGradientDirection(1);
     else (*this).setGradientDirection(2);
 }
 
-void CpmgConfig::readPathToField(string s)
-{
-    if(s.length() > 2 and s.substr(0,2) == "./") (*this).setPathToField((*this).getProjectRoot() + s);
-	else (*this).setPathToField(s);
-}
 
 void CpmgConfig::readInterpolateField(string s)
 {
