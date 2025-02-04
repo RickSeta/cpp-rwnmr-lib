@@ -21,7 +21,6 @@ private:
     string IMG_FILES_LIST;
     vector<string> IMG_FILES;
 
-
 public:
     // default constructors
     UctConfig():BaseConfig(){};
@@ -37,7 +36,7 @@ public:
     } 
 
     vector<string> checkConfig();
-    void readConfigFile(const string configFile);
+    void setConfig(const string dirPath, const string filename, const string firstIdx, const string digits, const string extension, const string slices, const string resolution, const string voxelDivision, const string poreColor);
     
     // -- Read methods
     void readDirPath(string s);
@@ -52,7 +51,7 @@ public:
     void readImgFilesList(string s);
     void readImgFiles();
 
-    // -- Read methods
+    // -- Set methods
     void setDirPath(string s){ this->DIR_PATH = s;}
     void setFilename(string s){ this->FILENAME = s;}
     void setFirstIdx(uint s){ this->FIRST_IDX = s; }
@@ -65,8 +64,7 @@ public:
     void setImgFilesList(string s){ this->IMG_FILES_LIST = s; }
     void setImgFiles(vector<string> s){ this->IMG_FILES = s; }
 
-
-    // -- Read methods
+    // -- Get methods
     string getDirPath(){ return this->DIR_PATH;}
     string getFilename(){ return this->FILENAME;}
     uint getFirstIdx(){ return this->FIRST_IDX;}

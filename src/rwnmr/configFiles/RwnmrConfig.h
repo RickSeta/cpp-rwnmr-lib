@@ -60,7 +60,7 @@ public:
 
     // Methods
     vector<string> checkConfig();
-    void readConfigFile(const string &nameContent, const string &walkersContent, const string &walkerSamplesContent,
+    void setConfig(const string &nameContent, const string &walkersContent, const string &walkerSamplesContent,
                         const string &walkersPlacementContent, const string &placementDeviationContent,
                         const string &rhoTypeContent, const string &rhoContent, const string &stepsPerEchoContent,
                         const string &giromagneticRatioContent, const string &giromagneticUnitContent,

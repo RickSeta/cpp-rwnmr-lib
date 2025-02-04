@@ -15,18 +15,11 @@ void rwnmrApp::buildEssentials()
 {
     cout << "--- Building RWNMR essentials" << endl;
 
-    // -- Read NMR essentials config files  
-    // -- rwnmr & uct image config
-    string RwnmrConfig_path;
-    if((*this).getArgsPath(0) != "default") RwnmrConfig_path = (*this).getArgsPath(0);
-    else RwnmrConfig_path = RWNMR_CONFIG_DEFAULT;
+    RwnmrConfig rwNMR_Config();     
+    rwNMR_Config.setConfig("configFile", "1000", "1", "random", "1", "uniform", "{0.0}", "4", "42.576", "mhertz", "2.5", "2800.0", "0", "mirror", "false", "false", "false", "1", "256", "linear", "0.0", "0", "0.0", "0.01", "1", "true", "4", "true", "4096", "1024", "16", "true", "65536");
     
-    string UctConfig_path;
-    if((*this).getArgsPath(1) != "default") UctConfig_path = (*this).getArgsPath(1);
-    else UctConfig_path = UCT_CONFIG_DEFAULT;
-
-    RwnmrConfig rwNMR_Config((*this).getProjectRoot() + RwnmrConfig_path, (*this).getProjectRoot());     
-    UctConfig uCT_Config((*this).getProjectRoot() + UctConfig_path, (*this).getProjectRoot()); 
+    UctConfig uCT_Config(); 
+    uCT_Config.setConfig("path_to_folder_with_images", "imagefile_prefix", "0", "1", ".png", "1", "1.0", "0", "0");
     // // -----
 
     // -- Create NMR_Simulation object

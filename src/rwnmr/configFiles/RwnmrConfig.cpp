@@ -18,8 +18,6 @@ RwnmrConfig::RwnmrConfig() :
     REDUCE_IN_GPU(true),
     WALKER_SAMPLES(1)
 {
-    vector<double> RHO;
-    (*this).readConfigFile("configFile", "1000", "1", "random", "1", "uniform", "{0.0}", "4", "42.576", "mhertz", "2.5", "2800.0", "0", "mirror", "false", "false", "false", "1", "256", "linear", "0.0", "0", "0.0", "0.01", "1", "true", "4", "true", "4096", "1024", "16", "true", "65536");
 }
 bool checkItem(bool condition, const string item, vector<string> &mp)
 {
@@ -86,7 +84,7 @@ vector<string> RwnmrConfig::checkConfig()
     return missingParameters;
 }
 // read config file
-void RwnmrConfig::readConfigFile(const string &nameContent, const string &walkersContent, const string &walkerSamplesContent,
+void RwnmrConfig::setConfig(const string &nameContent, const string &walkersContent, const string &walkerSamplesContent,
                                  const string &walkersPlacementContent, const string &placementDeviationContent,
                                  const string &rhoTypeContent, const string &rhoContent, const string &stepsPerEchoContent,
                                  const string &giromagneticRatioContent, const string &giromagneticUnitContent,
