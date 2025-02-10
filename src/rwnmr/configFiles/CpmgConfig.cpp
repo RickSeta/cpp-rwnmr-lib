@@ -18,9 +18,7 @@ CpmgConfig::CpmgConfig() :
     INTERPOLATE_FIELD(false),
     USE_T2_LOGSPACE(true), 
     SAVE_MODE(true)
-{
-    (*this).readConfigFile("false", "3000.0", "image-based", "false", "uniform", "10.0", "2", "${path-to-bin}", "false", "0.1", "100000.0", "true", "256", "-4", "2", "512", "0", "0.00", "true", "false", "false", "false", "false", "false");
-}
+{}
 
 // copy constructors
 CpmgConfig::CpmgConfig(const CpmgConfig &otherConfig) 
@@ -58,9 +56,9 @@ CpmgConfig::CpmgConfig(const CpmgConfig &otherConfig)
 
 
 // read config file
-void CpmgConfig::readConfigFile(const string &applyBulkContent, const string &obsTimeContent, 
+void CpmgConfig::setConfig(const string &applyBulkContent, const string &obsTimeContent, 
                                 const string &methodContent, const string &timeVerboseContent, const string &residualFieldContent, 
-                                const string &gradientValueContent, const string &gradientDirectionContent, const string &pathToFieldContent, 
+                                const string &gradientValueContent, const string &gradientDirectionContent,
                                 const string &interpolateFieldContent, const string &minT2Content, const string &maxT2Content, 
                                 const string &useT2LogspaceContent, const string &numT2BinsContent, const string &minLambdaContent, 
                                 const string &maxLambdaContent, const string &numLambdasContent, const string &pruneNumContent, 
@@ -68,24 +66,24 @@ void CpmgConfig::readConfigFile(const string &applyBulkContent, const string &ob
                                 const string &saveWalkersContent, const string &saveDecayContent, const string &saveHistogramContent, 
                                 const string &saveHistogramListContent)
 {
-    (*this).readApplyBulk(applyBulkContent);
+    if (!applyBulkContent.empty()) (*this).readApplyBulk(applyBulkContent);
     (*this).readObservationTime(obsTimeContent);
     (*this).readMethod(methodContent);
-    (*this).readTimeVerbose(timeVerboseContent);
+    if (!timeVerboseContent.empty()) (*this).readTimeVerbose(timeVerboseContent);
     (*this).readResidualField(residualFieldContent);
     (*this).readGradientValue(gradientValueContent);
     (*this).readGradientDirection(gradientDirectionContent);
-    (*this).readInterpolateField(interpolateFieldContent);
+    if (!interpolateFieldContent.empty()) (*this).readInterpolateField(interpolateFieldContent);
     (*this).readMinT2(minT2Content);
     (*this).readMaxT2(maxT2Content);
-    (*this).readUseT2Logspace(useT2LogspaceContent);
+    if (!useT2LogspaceContent.empty()) (*this).readUseT2Logspace(useT2LogspaceContent);
     (*this).readNumT2Bins(numT2BinsContent);
     (*this).readMinLambda(minLambdaContent);
     (*this).readMaxLambda(maxLambdaContent);
     (*this).readNumLambdas(numLambdasContent);
     (*this).readPruneNum(pruneNumContent);
     (*this).readNoiseAmp(noiseAmpContent);
-    (*this).readSaveMode(saveModeContent);
+    if (!saveModeContent.empty()) (*this).readSaveMode(saveModeContent);
     (*this).readSaveT2(saveT2Content);
     (*this).readSaveWalkers(saveWalkersContent);
     (*this).readSaveDecay(saveDecayContent);

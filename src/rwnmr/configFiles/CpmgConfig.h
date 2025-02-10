@@ -42,9 +42,9 @@ public:
 
     // Methods
     vector<string> checkConfig();
-    void readConfigFile(const string &applyBulkContent, const string &obsTimeContent, 
+    void setConfig(const string &applyBulkContent, const string &obsTimeContent, 
                         const string &methodContent, const string &timeVerboseContent, const string &residualFieldContent, 
-                        const string &gradientValueContent, const string &gradientDirectionContent, const string &pathToFieldContent, 
+                        const string &gradientValueContent, const string &gradientDirectionContent, 
                         const string &interpolateFieldContent, const string &minT2Content, const string &maxT2Content, 
                         const string &useT2LogspaceContent, const string &numT2BinsContent, const string &minLambdaContent, 
                         const string &maxLambdaContent, const string &numLambdasContent, const string &pruneNumContent, 
