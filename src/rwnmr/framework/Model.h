@@ -51,7 +51,7 @@ private:
     // image attributes
     double imageResolution;
     double stepLength;    
-    vector<Mat> binaryMap;
+    vector<uint8_t*> binaryMap;
     BitBlock *bitBlock;
     string boundaryCondition;
     int voxelDivision;
@@ -64,7 +64,7 @@ private:
 public:
     // NMR_3D methods:
     // default constructors
-    Model(RwnmrConfig _rwNMR_config, UctConfig _uCT_config, string _project_root);
+    Model(RwnmrConfig _rwNMR_config, UctConfig _uCT_config, uint8_t** image);
 
     //copy constructors
     // copy constructor

@@ -27,7 +27,7 @@ Model::Model(RwnmrConfig _rwNMR_config,
     vector<CollisionHistogram> histogramList();
 
     // set simulation name and directory to save results
-    (*this).setDbPath(_project_root + "./db/");
+    (*this).setDbPath("./db/");
     (*this).setName(this->rwNMR_config.getName());
     (*this).setDir((*this).createDirectoryForResults((*this).getDbPath()));
 

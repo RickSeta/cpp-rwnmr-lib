@@ -11,10 +11,10 @@ class UctConfig:
         self.slices = slices
         self.resolution = resolution
         self.voxel_division = voxel_division
-        self.pore_color = pore_color
+        self.pore_color = pore_color 
 
 class CpmgConfig:
-    def __init__(self, apply_bulk, obs_time, method, time_verbose, residual_field, gradient_value, gradient_direction, path_to_field, interpolate_field, min_t2, max_t2, use_t2_logspace, num_t2_bins, min_lambda, max_lambda, num_lambdas, prune_num, noise_amp, save_mode, save_t2, save_walkers, save_decay, save_histogram, save_histogram_list):
+    def __init__(self, apply_bulk, obs_time, method, time_verbose, residual_field, gradient_value, gradient_direction, interpolate_field, min_t2, max_t2, use_t2_logspace, num_t2_bins, min_lambda, max_lambda, num_lambdas, prune_num, noise_amp, save_mode, save_t2, save_walkers, save_decay, save_histogram, save_histogram_list):
         self.apply_bulk = apply_bulk
         self.obs_time = obs_time
         self.method = method
@@ -22,7 +22,6 @@ class CpmgConfig:
         self.residual_field = residual_field
         self.gradient_value = gradient_value
         self.gradient_direction = gradient_direction
-        self.path_to_field = path_to_field
         self.interpolate_field = interpolate_field
         self.min_t2 = min_t2
         self.max_t2 = max_t2
@@ -41,7 +40,8 @@ class CpmgConfig:
         self.save_histogram_list = save_histogram_list
 
 class RwnmrConfig:
-    def __init__(self, map_time, map_steps, map_filter, map_tol, map_iterations, save_img_info, save_binimg, save_walkers, openmp_usage, openmp_threads, gpu_usage, reduce_in_gpu, walker_samples):
+    def __init__(self, name, map_time, map_steps, map_filter, map_tol, map_iterations, save_img_info, save_binimg, save_walkers, openmp_usage, openmp_threads, gpu_usage, reduce_in_gpu, walker_samples, walkers, walkers_placement, placement_deviation, rho_type, rho, giromagnetic_ratio, giromagnetic_unit, d0, bulk_time, steps_per_echo, bc, histograms, histogram_size, histogram_scale, blocks, threads_per_block, echoes_per_kernel, max_rwsteps ,seed):
+        self.name = name
         self.map_time = map_time
         self.map_steps = map_steps
         self.map_filter = map_filter
@@ -55,13 +55,67 @@ class RwnmrConfig:
         self.gpu_usage = gpu_usage
         self.reduce_in_gpu = reduce_in_gpu
         self.walker_samples = walker_samples
-
+        self.walkers = walkers
+        self.walkers_placement = walkers_placement
+        self.placement_deviation = placement_deviation
+        self.rho_type = rho_type
+        self.rho = rho
+        self.giromagnetic_ratio = giromagnetic_ratio
+        self.giromagnetic_unit = giromagnetic_unit
+        self.d0 = d0
+        self.bulk_time = bulk_time
+        self.steps_per_echo = steps_per_echo
+        self.bc = bc
+        self.histograms = histograms
+        self.histogram_size = histogram_size
+        self.histogram_scale = histogram_scale
+        self.blocks = blocks
+        self.threads_per_block = threads_per_block
+        self.echoes_per_kernel = echoes_per_kernel
+        self.max_rwsteps = max_rwsteps
+        self.seed = seed
 # Example usage
 uct_config = UctConfig("path_to_folder_with_images", "imagefile_prefix", 0, 1, ".png", 1, 1.0, 0, 0)
-cpmg_config = CpmgConfig("False", "3000.0", "image-based", "False", "uniform", "10.0", "2", "False", "0.1", "100000.0", "True", "256", "-4", "2", "512", "0", "0.00", "True", "False", "False", "False", "False", "False")
-rwnmr_config = RwnmrConfig(0.0, 0, 0.0, 0.01, 1, False, False, False, True, 4, True, True, 1)
+cpmg_config = CpmgConfig("False", "3000.0", "image-based", "False", "uniform", "10.0", "2", "False", "0.1", "100000.0", "True", "256", "-4", "2", "512", "0", "0.00", "True", "False", "False", "False", "False","False")
+rwnmr_config = RwnmrConfig(
+    name="examplename",
+    map_time="0.0",
+    map_steps="0",
+    map_filter="0.0",
+    map_tol="0.01",
+    map_iterations="1",
+    save_img_info="False",
+    save_binimg="False",
+    save_walkers="False",
+    openmp_usage="True",
+    openmp_threads="4",
+    gpu_usage="True",
+    reduce_in_gpu="True",
+    walker_samples="1",
+    walkers="1000",
+    walkers_placement="random",
+    placement_deviation="0.0",
+    rho_type="uniform",
+    rho="{0.0}",
+    giromagnetic_ratio="42.576",
+    giromagnetic_unit="mhertz",
+    d0="2.5",
+    bulk_time="2800.0",
+    steps_per_echo="4",
+    bc="mirror",
+    histograms="1",
+    histogram_size="256",
+    histogram_scale="linear",
+    blocks="4096",
+    threads_per_block="1024",
+    echoes_per_kernel="16",
+    max_rwsteps="65536",
+    seed="0"
+    
+)
 
-print(cpmg_config.path_to_field)
-print(type(cpmg_config.path_to_field))
+# print(cpmg_config.path_to_field)
+# print(type(cpmg_config.path_to_field))
 list = np.array([1.0,9.0],dtype= np.uint8)
 print(rwnmr.CPMG(cpmg_config))
+print(rwnmr.RWNMR(rwnmr_config))

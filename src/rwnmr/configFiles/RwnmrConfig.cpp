@@ -35,7 +35,7 @@ vector<string> RwnmrConfig::checkConfig()
 
     vector<string> placements = {"random", "center", "cubic"};
     validState &= checkItem(std::find(placements.begin(), placements.end(), (*this).getWalkersPlacement()) != placements.end(),
-                                    (string) "WALKER_PLACEMENT", missingParameters);
+                                    (string) "WALKER_PLACEMENT", missingParameters); 
 
     vector<string> rhoTypes = {"uniform", "sigmoid"};
     validState &= checkItem(std::find(rhoTypes.begin(), rhoTypes.end(), (*this).getRhoType()) != rhoTypes.end(),
@@ -99,9 +99,10 @@ void RwnmrConfig::setConfig(const string &nameContent, const string &walkersCont
                                  const string &threadsPerBlockContent, const string &echoesPerKernelContent,
                                  const string &reduceInGPUContent, const string &maxRWStepsContent)
 {
+    printf("Reading config file\n");
     (*this).readName(nameContent);
     (*this).readWalkers(walkersContent);
-    (*this).readWalkerSamples(walkerSamplesContent);
+    if (!walkerSamplesContent.empty()) (*this).readWalkerSamples(walkerSamplesContent);
     (*this).readWalkersPlacement(walkersPlacementContent);
     (*this).readPlacementDeviation(placementDeviationContent);
     (*this).readRhoType(rhoTypeContent);
@@ -113,24 +114,24 @@ void RwnmrConfig::setConfig(const string &nameContent, const string &walkersCont
     (*this).readBulkTime(bulkTimeContent);
     (*this).readSeed(seedContent);
     (*this).readBC(bcContent);
-    (*this).readMapSteps(mapStepsContent);
-    (*this).readSaveImgInfo(saveImgInfoContent);
-    (*this).readSaveBinImg(saveBinImgContent);
-    (*this).readSaveWalkers(saveWalkersContent);
+    if (!saveImgInfoContent.empty()) (*this).readSaveImgInfo(saveImgInfoContent);
+    if (!saveBinImgContent.empty()) (*this).readSaveBinImg(saveBinImgContent);
+    if (!saveWalkersContent.empty()) (*this).readSaveWalkers(saveWalkersContent);
     (*this).readHistograms(histogramsContent);
     (*this).readHistogramSize(histogramSizeContent);
     (*this).readHistogramScale(histogramScaleContent);
-    (*this).readMapTime(mapTimeContent);
-    (*this).readMapFilter(mapFilterContent);
-    (*this).readMapTol(mapTolContent);
-    (*this).readMapIterations(mapIterationsContent);
-    (*this).readOpenMPUsage(openMPUsageContent);
-    (*this).readOpenMPThreads(openMPThreadsContent);
-    (*this).readGPUUsage(gpuUsageContent);
+    if (!mapTimeContent.empty()) (*this).readMapTime(mapTimeContent);
+    if (!mapStepsContent.empty()) (*this).readMapSteps(mapStepsContent);
+    if (!mapFilterContent.empty()) (*this).readMapFilter(mapFilterContent);
+    if (!mapTolContent.empty()) (*this).readMapTol(mapTolContent);
+    if (!mapIterationsContent.empty()) (*this).readMapIterations(mapIterationsContent);
+    if (!openMPUsageContent.empty()) (*this).readOpenMPUsage(openMPUsageContent);
+    if (!openMPThreadsContent.empty()) (*this).readOpenMPThreads(openMPThreadsContent);
+    if (!gpuUsageContent.empty()) (*this).readGPUUsage(gpuUsageContent);
     (*this).readBlocks(blocksContent);
     (*this).readThreadsPerBlock(threadsPerBlockContent);
     (*this).readEchoesPerKernel(echoesPerKernelContent);
-    (*this).readReduceInGPU(reduceInGPUContent);
+    if (!reduceInGPUContent.empty()) (*this).readReduceInGPU(reduceInGPUContent);
     (*this).readMaxRWSteps(maxRWStepsContent);
 }
 

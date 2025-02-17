@@ -4,3 +4,7 @@
 /Testing/*
 /.vscode/*
 /rwnmr
+/.venv
+/rwnmr.egg-info
+*.whl
+/img_reader

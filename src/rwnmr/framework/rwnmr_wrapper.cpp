@@ -5,6 +5,7 @@
 #include <numpy/arrayobject.h>
 #include <iostream>
 #include "../configFiles/CpmgConfig.h"
+#include "../configFiles/RwnmrConfig.h"
 
 static PyObject* metodo1(PyObject* self, PyObject* args){
 
@@ -162,7 +163,7 @@ static PyObject *recebe_objeto_classe(PyObject *self, PyObject *args) {
     // Verificando se obj_python é uma instância de classe_python
     if (PyObject_IsInstance(obj_python, classe_python)) {
         // Exemplo: acessando um atributo do objeto
-        PyObject *nome_attr = PyObject_GetAttrString(obj_python, "path_to_field");
+        PyObject *nome_attr = PyObject_GetAttrString(obj_python, "apply_bulk");
         if (nome_attr != NULL) {
             if (PyUnicode_Check(nome_attr)) {
                 const char *nome = PyUnicode_AsUTF8(nome_attr);
@@ -179,12 +180,202 @@ static PyObject *recebe_objeto_classe(PyObject *self, PyObject *args) {
 
     Py_RETURN_NONE;
 }
+static PyObject* RWNMR(PyObject* self, PyObject* args){
+    PyObject* RWNMR_object;
 
+    if(!PyArg_ParseTuple(args, "O", &RWNMR_object)){
+        Py_DecRef(RWNMR_object);
+        return NULL;
+    }
+    printf("Entrou no RWNMR\n");
+    RwnmrConfig rwnmr_config;
+    PyObject* walkersContent = PyObject_GetAttrString(RWNMR_object, "walkers");
+    PyObject* nameContent = PyObject_GetAttrString(RWNMR_object, "name");
+    PyObject* walkerSamplesContent = PyObject_GetAttrString(RWNMR_object, "walker_samples");
+    PyObject* walkersPlacementContent = PyObject_GetAttrString(RWNMR_object, "walkers_placement");
+    PyObject* placementDeviationContent = PyObject_GetAttrString(RWNMR_object, "placement_deviation");
+    PyObject* rhoTypeContent = PyObject_GetAttrString(RWNMR_object, "rho_type");
+    PyObject* rhoContent = PyObject_GetAttrString(RWNMR_object, "rho");
+    PyObject* stepsPerEchoContent = PyObject_GetAttrString(RWNMR_object, "steps_per_echo");
+    PyObject* giromagneticRatioContent = PyObject_GetAttrString(RWNMR_object, "giromagnetic_ratio");
+    PyObject* giromagneticUnitContent = PyObject_GetAttrString(RWNMR_object, "giromagnetic_unit");
+    PyObject* d0Content = PyObject_GetAttrString(RWNMR_object, "d0");
+    PyObject* bulkTimeContent = PyObject_GetAttrString(RWNMR_object, "bulk_time");
+    PyObject* seedContent = PyObject_GetAttrString(RWNMR_object, "seed");
+    PyObject* bcContent = PyObject_GetAttrString(RWNMR_object, "bc");
+    PyObject* mapStepsContent = PyObject_GetAttrString(RWNMR_object, "map_steps");
+    PyObject* saveImgInfoContent = PyObject_GetAttrString(RWNMR_object, "save_img_info");
+    PyObject* saveBinImgContent = PyObject_GetAttrString(RWNMR_object, "save_binimg");
+    PyObject* saveWalkersContent = PyObject_GetAttrString(RWNMR_object, "save_walkers");
+    PyObject* histogramsContent = PyObject_GetAttrString(RWNMR_object, "histograms");
+    PyObject* histogramSizeContent = PyObject_GetAttrString(RWNMR_object, "histogram_size");
+    PyObject* histogramScaleContent = PyObject_GetAttrString(RWNMR_object, "histogram_scale");
+    PyObject* mapTimeContent = PyObject_GetAttrString(RWNMR_object, "map_time");
+    PyObject* mapFilterContent = PyObject_GetAttrString(RWNMR_object, "map_filter");
+    PyObject* mapTolContent = PyObject_GetAttrString(RWNMR_object, "map_tol");
+    PyObject* mapIterationsContent = PyObject_GetAttrString(RWNMR_object, "map_iterations");
+    PyObject* openMPUsageContent = PyObject_GetAttrString(RWNMR_object, "openmp_usage");
+    PyObject* openMPThreadsContent = PyObject_GetAttrString(RWNMR_object, "openmp_threads");
+    PyObject* gpuUsageContent = PyObject_GetAttrString(RWNMR_object, "gpu_usage");
+    PyObject* blocksContent = PyObject_GetAttrString(RWNMR_object, "blocks");
+    PyObject* threadsPerBlockContent = PyObject_GetAttrString(RWNMR_object, "threads_per_block");
+    PyObject* echoesPerKernelContent = PyObject_GetAttrString(RWNMR_object, "echoes_per_kernel");
+    PyObject* reduceInGPUContent = PyObject_GetAttrString(RWNMR_object, "reduce_in_gpu");
+    PyObject* maxRWStepsContent = PyObject_GetAttrString(RWNMR_object, "max_rwsteps");
+
+    printf("passou os paarametros\n");
+if (nameContent == NULL || walkersContent == NULL || walkersPlacementContent == NULL ||
+        placementDeviationContent == NULL || rhoTypeContent == NULL || rhoContent == NULL || stepsPerEchoContent == NULL ||
+        giromagneticRatioContent == NULL || giromagneticUnitContent == NULL || d0Content == NULL || bulkTimeContent == NULL ||
+        seedContent == NULL || bcContent == NULL || histogramsContent == NULL || histogramSizeContent == NULL || histogramScaleContent == NULL ||
+        blocksContent == NULL || threadsPerBlockContent == NULL || echoesPerKernelContent == NULL || maxRWStepsContent == NULL) {
+    // Handle error
+    printf("Erro ao pegar os parametros\n");
+        if (nameContent == NULL) printf("nameContent is NULL\n");
+        if (walkersContent == NULL) printf("walkersContent is NULL\n");
+        if (walkerSamplesContent == NULL) printf("walkerSamplesContent is NULL\n");
+        if (walkersPlacementContent == NULL) printf("walkersPlacementContent is NULL\n");
+        if (placementDeviationContent == NULL) printf("placementDeviationContent is NULL\n");
+        if (rhoTypeContent == NULL) printf("rhoTypeContent is NULL\n");
+        if (rhoContent == NULL) printf("rhoContent is NULL\n");
+        if (stepsPerEchoContent == NULL) printf("stepsPerEchoContent is NULL\n");
+        if (giromagneticRatioContent == NULL) printf("giromagneticRatioContent is NULL\n");
+        if (giromagneticUnitContent == NULL) printf("giromagneticUnitContent is NULL\n");
+        if (d0Content == NULL) printf("d0Content is NULL\n");
+        if (bulkTimeContent == NULL) printf("bulkTimeContent is NULL\n");
+        if (seedContent == NULL) printf("seedContent is NULL\n");
+        if (bcContent == NULL) printf("bcContent is NULL\n");
+        if (mapStepsContent == NULL) printf("mapStepsContent is NULL\n");
+        if (saveImgInfoContent == NULL) printf("saveImgInfoContent is NULL\n");
+        if (saveBinImgContent == NULL) printf("saveBinImgContent is NULL\n");
+        if (saveWalkersContent == NULL) printf("saveWalkersContent is NULL\n");
+        if (histogramsContent == NULL) printf("histogramsContent is NULL\n");
+        if (histogramSizeContent == NULL) printf("histogramSizeContent is NULL\n");
+        if (histogramScaleContent == NULL) printf("histogramScaleContent is NULL\n");
+        if (mapTimeContent == NULL) printf("mapTimeContent is NULL\n");
+        if (mapFilterContent == NULL) printf("mapFilterContent is NULL\n");
+        if (mapTolContent == NULL) printf("mapTolContent is NULL\n");
+        if (mapIterationsContent == NULL) printf("mapIterationsContent is NULL\n");
+        if (openMPUsageContent == NULL) printf("openMPUsageContent is NULL\n");
+        if (openMPThreadsContent == NULL) printf("openMPThreadsContent is NULL\n");
+        if (gpuUsageContent == NULL) printf("gpuUsageContent is NULL\n");
+        if (blocksContent == NULL) printf("blocksContent is NULL\n");
+        if (threadsPerBlockContent == NULL) printf("threadsPerBlockContent is NULL\n");
+        if (echoesPerKernelContent == NULL) printf("echoesPerKernelContent is NULL\n");
+        if (reduceInGPUContent == NULL) printf("reduceInGPUContent is NULL\n");
+        if (maxRWStepsContent == NULL) printf("maxRWStepsContent is NULL\n");
+        Py_XDECREF(nameContent);
+        Py_XDECREF(walkersContent);
+        Py_XDECREF(walkerSamplesContent);
+        Py_XDECREF(walkersPlacementContent);
+        Py_XDECREF(placementDeviationContent);
+        Py_XDECREF(rhoTypeContent);
+        Py_XDECREF(rhoContent);
+        Py_XDECREF(stepsPerEchoContent);
+        Py_XDECREF(giromagneticRatioContent);
+        Py_XDECREF(giromagneticUnitContent);
+        Py_XDECREF(d0Content);
+        Py_XDECREF(bulkTimeContent);
+        Py_XDECREF(seedContent);
+        Py_XDECREF(bcContent);
+        Py_XDECREF(mapStepsContent);
+        Py_XDECREF(saveImgInfoContent);
+        Py_XDECREF(saveBinImgContent);
+        Py_XDECREF(saveWalkersContent);
+        Py_XDECREF(histogramsContent);
+        Py_XDECREF(histogramSizeContent);
+        Py_XDECREF(histogramScaleContent);
+        Py_XDECREF(mapTimeContent);
+        Py_XDECREF(mapFilterContent);
+        Py_XDECREF(mapTolContent);
+        Py_XDECREF(mapIterationsContent);
+        Py_XDECREF(openMPUsageContent);
+        Py_XDECREF(openMPThreadsContent);
+        Py_XDECREF(gpuUsageContent);
+        Py_XDECREF(blocksContent);
+        Py_XDECREF(threadsPerBlockContent);
+        Py_XDECREF(echoesPerKernelContent);
+        Py_XDECREF(reduceInGPUContent);
+        Py_XDECREF(maxRWStepsContent);
+        return NULL;
+    }
+    rwnmr_config.readName(PyUnicode_AsUTF8(nameContent));
+    rwnmr_config.readWalkers(PyUnicode_AsUTF8(walkersContent));
+    rwnmr_config.readWalkerSamples(PyUnicode_AsUTF8(walkerSamplesContent));
+    rwnmr_config.readWalkersPlacement(PyUnicode_AsUTF8(walkersPlacementContent));
+    rwnmr_config.readPlacementDeviation(PyUnicode_AsUTF8(placementDeviationContent));
+    rwnmr_config.readRhoType(PyUnicode_AsUTF8(rhoTypeContent));
+    rwnmr_config.readRho(PyUnicode_AsUTF8(rhoContent));
+    rwnmr_config.readStepsPerEcho(PyUnicode_AsUTF8(stepsPerEchoContent));
+    rwnmr_config.readGiromagneticRatio(PyUnicode_AsUTF8(giromagneticRatioContent));
+    rwnmr_config.readGiromagneticUnit(PyUnicode_AsUTF8(giromagneticUnitContent));
+    rwnmr_config.readD0(PyUnicode_AsUTF8(d0Content));
+    rwnmr_config.readBulkTime(PyUnicode_AsUTF8(bulkTimeContent));
+    rwnmr_config.readSeed(PyUnicode_AsUTF8(seedContent));
+    rwnmr_config.readBC(PyUnicode_AsUTF8(bcContent));
+    rwnmr_config.readMapSteps(PyUnicode_AsUTF8(mapStepsContent));
+    rwnmr_config.readSaveImgInfo(PyUnicode_AsUTF8(saveImgInfoContent));
+    rwnmr_config.readSaveBinImg(PyUnicode_AsUTF8(saveBinImgContent));
+    rwnmr_config.readSaveWalkers(PyUnicode_AsUTF8(saveWalkersContent));
+    rwnmr_config.readHistograms(PyUnicode_AsUTF8(histogramsContent));
+    rwnmr_config.readHistogramSize(PyUnicode_AsUTF8(histogramSizeContent));
+    rwnmr_config.readHistogramScale(PyUnicode_AsUTF8(histogramScaleContent));
+    rwnmr_config.readMapTime(PyUnicode_AsUTF8(mapTimeContent));
+    rwnmr_config.readMapFilter(PyUnicode_AsUTF8(mapFilterContent));
+    rwnmr_config.readMapTol(PyUnicode_AsUTF8(mapTolContent));
+    rwnmr_config.readMapIterations(PyUnicode_AsUTF8(mapIterationsContent));
+    rwnmr_config.readOpenMPUsage(PyUnicode_AsUTF8(openMPUsageContent));
+    rwnmr_config.readOpenMPThreads(PyUnicode_AsUTF8(openMPThreadsContent));
+    rwnmr_config.readGPUUsage(PyUnicode_AsUTF8(gpuUsageContent));
+    rwnmr_config.readBlocks(PyUnicode_AsUTF8(blocksContent));
+    rwnmr_config.readThreadsPerBlock(PyUnicode_AsUTF8(threadsPerBlockContent));
+    rwnmr_config.readEchoesPerKernel(PyUnicode_AsUTF8(echoesPerKernelContent));
+    rwnmr_config.readReduceInGPU(PyUnicode_AsUTF8(reduceInGPUContent));
+    rwnmr_config.readMaxRWSteps(PyUnicode_AsUTF8(maxRWStepsContent));
+  
+    printf("leu os parametros\n");
+    Py_DECREF(nameContent);
+    Py_DECREF(walkersContent);
+    Py_DECREF(walkerSamplesContent);
+    Py_DECREF(walkersPlacementContent);
+    Py_DECREF(placementDeviationContent);
+    Py_DECREF(rhoTypeContent);
+    Py_DECREF(rhoContent);
+    Py_DECREF(stepsPerEchoContent);
+    Py_DECREF(giromagneticRatioContent);
+    Py_DECREF(giromagneticUnitContent);
+    Py_DECREF(d0Content);
+    Py_DECREF(bulkTimeContent);
+    Py_DECREF(seedContent);
+    Py_DECREF(bcContent);
+    Py_DECREF(mapStepsContent);
+    Py_DECREF(saveImgInfoContent);
+    Py_DECREF(saveBinImgContent);
+    Py_DECREF(saveWalkersContent);
+    Py_DECREF(histogramsContent);
+    Py_DECREF(histogramSizeContent);
+    Py_DECREF(histogramScaleContent);
+    Py_DECREF(mapTimeContent);
+    Py_DECREF(mapFilterContent);
+    Py_DECREF(mapTolContent);
+    Py_DECREF(mapIterationsContent);
+    Py_DECREF(openMPUsageContent);
+    Py_DECREF(openMPThreadsContent);
+    Py_DECREF(gpuUsageContent);
+    Py_DECREF(blocksContent);
+    Py_DECREF(threadsPerBlockContent);
+    Py_DECREF(echoesPerKernelContent);
+    Py_DECREF(reduceInGPUContent);
+    Py_DECREF(maxRWStepsContent);
+    
+    return PyUnicode_FromFormat("Nome do objeto: %s", rwnmr_config.getName().c_str());
+}
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
     {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
     {"CPMG", (PyCFunction) CPMG,METH_VARARGS, "Testando CPMG"},
     {"recebe_objeto_classe", (PyCFunction) recebe_objeto_classe, METH_VARARGS, "Recebe um objeto Python e uma classe Python"},
+    {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
     {NULL, NULL}
 };
 

@@ -16,7 +16,7 @@ void rwnmrApp::buildEssentials()
     cout << "--- Building RWNMR essentials" << endl;
 
     RwnmrConfig rwNMR_Config();     
-    rwNMR_Config.setConfig("configFile", "1000", "1", "random", "1", "uniform", "{0.0}", "4", "42.576", "mhertz", "2.5", "2800.0", "0", "mirror", "false", "false", "false", "1", "256", "linear", "0.0", "0", "0.0", "0.01", "1", "true", "4", "true", "4096", "1024", "16", "true", "65536");
+    rwNMR_Config.setConfig("name", "1000", "1", "random", "1", "uniform", "{0.0}", "4", "42.576", "mhertz", "2.5", "2800.0", "0", "mirror", "false", "false", "false", "1", "256", "linear", "0.0", "0", "0.0", "0.01", "1", "true", "4", "true", "4096", "1024", "16", "true", "65536");
     
     UctConfig uCT_Config(); 
     uCT_Config.setConfig("path_to_folder_with_images", "imagefile_prefix", "0", "1", ".png", "1", "1.0", "0", "0");
@@ -24,7 +24,7 @@ void rwnmrApp::buildEssentials()
 
     // -- Create NMR_Simulation object
     // this->model = new Model(rwNMR_Config, uCT_Config, (*this).getProjectRoot());
-    (*this).setModel(new Model(rwNMR_Config, uCT_Config, (*this).getProjectRoot()));
+    (*this).setModel(new Model(rwNMR_Config, uCT_Config, ));
     // Read digital rock image
     cout << "-- Loading uCT-image" << endl;
     (*this).getModel().readImage();
@@ -75,10 +75,9 @@ void rwnmrApp::CPMG(uint command_idx)
 {
     cout << "-- CPMG to be executed:" << endl;
     // -- Read CPMG routine config files
-    string CpmgConfig_path;
-    if((*this).getArgsPath(command_idx) != "default") CpmgConfig_path = (*this).getArgsPath(command_idx);
-    else CpmgConfig_path = CPMG_CONFIG_DEFAULT;
-    CpmgConfig cpmg_Config((*this).getProjectRoot() + CpmgConfig_path, (*this).getProjectRoot());
+    CpmgConfig cpmg_Config();
+    cpmg_Config.set_config("false", "3000.0", "image-based", "false", "uniform", "10.0", "2", "${path-to-bin}", "false", "0.1", "100000.0", "true", "256", "-4", "2", "512", "0", "0.00", "true", "false", "false", "false", "false", "false");
+
     // --
 
     // -- Create cpmg object
