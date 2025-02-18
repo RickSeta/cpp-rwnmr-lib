@@ -3,8 +3,7 @@
 std::mt19937 Model::_rng;
 
 Model::Model(RwnmrConfig _rwNMR_config, 
-                               UctConfig _uCT_config,
-                               string _project_root) :   rwNMR_config(_rwNMR_config),
+                               UctConfig _uCT_config, std::vector<CustomMat>  _image) :   rwNMR_config(_rwNMR_config),
                                                          uCT_config(_uCT_config),
                                                          simulationSteps(0),
                                                          numberOfEchoes(0),
@@ -17,10 +16,11 @@ Model::Model(RwnmrConfig _rwNMR_config,
                                                          svpRatio(-1.0),
                                                          walkerOccupancy(-1.0),
                                                          voxelDivisionApplied(false),
-                                                         histogram()
+                                                         histogram(),
+                                                         image(_image)
 {
     // init vector objects
-    vector<Mat> binaryMap();
+    vector<CustomMat> binaryMap();
     vector<Pos3d> pores();
     vector<uint> walkersIdxList();
     this->walkers = new vector<Walker>;
@@ -372,27 +372,19 @@ void Model::loadImage()
     // reserve memory for binaryMap
     uint numberOfImages = this->uCT_config.getSlices();
     this->binaryMap.reserve(numberOfImages);
-    
-    // variable strings
-    string currentImagePath;
-    Mat rockImage;
 
     // create progress bar object
     ProgressBar pBar((double) numberOfImages);
-
     for (uint slice = 0; slice < numberOfImages; slice++)
     {
-        currentImagePath = this->uCT_config.getImgFile(slice);
 
-        rockImage = cv::Mat(cv::imread(currentImagePath, cv::IMREAD_GRAYSCALE));
+        // if (rockImages.empty())
+        // {
+        //     cout << "Error: No image data in file " << currentImagePath << endl;
+        //     exit(1);
+        // }
 
-        if (!rockImage.data)
-        {
-            cout << "Error: No image data in file " << currentImagePath << endl;
-            exit(1);
-        }
-
-        (*this).createBinaryMap(rockImage, slice);
+        (*this).createBinaryMap(this->image.at(slice),slice);
 
         // Update progress bar
         pBar.update(1);
@@ -404,28 +396,23 @@ void Model::loadImage()
 }
 
 
-void Model::createBinaryMap(Mat &_rockImage, uint slice)
+void Model::createBinaryMap(CustomMat _rockImage, uint slice)
 {
     // create an "empty" image to be filled in binary map vector
-    Mat emptyMap = Mat::zeros(_rockImage.rows, _rockImage.cols, CV_8UC1);
+    CustomMat emptyMap = CustomMat(_rockImage.getRows(), _rockImage.getCols());
     binaryMap.push_back(emptyMap);
 
-    int height = _rockImage.rows;
-    int width = _rockImage.cols;
-    uchar *imagePixel;
-    uchar *binaryMapPixel;
+    int height = _rockImage.getRows();
+    int width = _rockImage.getCols();
 
     for (int row = 0; row < height; ++row)
     {
-        imagePixel = _rockImage.ptr<uchar>(row);
-        binaryMapPixel = this->binaryMap[slice].ptr<uchar>(row);
 
         for (int column = 0; column < width; column++)
         {
-
-            if(imagePixel[column] != this->uCT_config.getPoreColor())
+            if (_rockImage.at(row, column) != this->uCT_config.getPoreColor())
             {
-                binaryMapPixel[column] = 255;
+                this->binaryMap.at(slice).at(row, column) = 255;
             }
         } 
     }    

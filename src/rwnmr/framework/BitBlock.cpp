@@ -16,7 +16,7 @@ BitBlock::BitBlock(const BitBlock &_bitBlock)
     this->blockDepth = _bitBlock.blockDepth;
 }
 
-void BitBlock::createBlockMap(vector<Mat> &_binaryMap, uchar poreColor)
+void BitBlock::createBlockMap(vector<CustomMat> &_binaryMap, uchar poreColor)
 {
     if (_binaryMap.size() == 1)
     {
@@ -31,10 +31,10 @@ void BitBlock::createBlockMap(vector<Mat> &_binaryMap, uchar poreColor)
 }
 
 // 2D block
-void BitBlock::setBlockMapDimensions_2D(Mat &_binaryMap)
+void BitBlock::setBlockMapDimensions_2D(CustomMat &_binaryMap)
 {
-    (*this).setImageRows(_binaryMap.rows);
-    (*this).setImageColumns(_binaryMap.cols);
+    (*this).setImageRows(_binaryMap.getRows());
+    (*this).setImageColumns(_binaryMap.getCols());
 
     // for 2D blocks, depth parameter is meaningless
     (*this).setImageDepth(1);
@@ -58,7 +58,7 @@ void BitBlock::setBlockMapDimensions_2D(Mat &_binaryMap)
     (*this).allocBlocks((*this).getNumberOfBlocks());
 }
 
-void BitBlock::createBitBlocksArray_2D(Mat &_binaryMap, uchar poreColor)
+void BitBlock::createBitBlocksArray_2D(CustomMat &_binaryMap, uchar poreColor)
 {
     uint64_t newBlock;
 
@@ -131,10 +131,10 @@ void BitBlock::saveBitBlockArray_2D(string filename)
 }
 
 // 3D block
-void BitBlock::setBlockMapDimensions_3D(vector<Mat> &_binaryMap)
+void BitBlock::setBlockMapDimensions_3D(vector<CustomMat> &_binaryMap)
 {
-    (*this).setImageRows(_binaryMap[0].rows);
-    (*this).setImageColumns(_binaryMap[0].cols);
+    (*this).setImageRows(_binaryMap[0].getRows());
+    (*this).setImageColumns(_binaryMap[0].getCols());
     (*this).setImageDepth(_binaryMap.size());
 
     (*this).setBlockRows((*this).getImageRows() / ROWSPERBLOCK3D);
@@ -161,7 +161,7 @@ void BitBlock::setBlockMapDimensions_3D(vector<Mat> &_binaryMap)
     (*this).allocBlocks((*this).getNumberOfBlocks());
 }
 
-void BitBlock::createBitBlocksArray_3D(vector<Mat> &_binaryMap, uchar poreColor)
+void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar poreColor)
 {
     uint64_t newBlock;
 

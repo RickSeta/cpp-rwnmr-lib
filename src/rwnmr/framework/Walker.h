@@ -227,7 +227,7 @@ public:
         return nextPosition;
     };
 
-    inline void checkBorder_2D(Mat &_binaryMap)
+    inline void checkBorder_2D(CustomMat &_binaryMap)
     {
         switch (this->nextDirection)
         {
@@ -240,7 +240,7 @@ public:
 
         case South:
 
-            if (this->currentPosition.getY() == _binaryMap.rows - 1)
+            if (this->currentPosition.getY() == _binaryMap.getRows() - 1)
             {
                 nextDirection = North;
             }
@@ -254,7 +254,7 @@ public:
             break;
 
         case East:
-            if (this->currentPosition.getX() == _binaryMap.cols - 1)
+            if (this->currentPosition.getX() == _binaryMap.getCols() - 1)
             {
                 nextDirection = West;
             }
@@ -297,7 +297,7 @@ public:
         }
     };
 
-    inline bool checkNextPosition_2D(Pos3d _nextPosition, Mat &_binaryMap, uchar _poreColor)
+    inline bool checkNextPosition_2D(Pos3d _nextPosition, CustomMat &_binaryMap, uchar _poreColor)
     {
         return (_nextPosition.isPore(_binaryMap, _poreColor));
     };
@@ -364,7 +364,7 @@ public:
         return nextPosition;
     };
 
-    inline void checkBorder_3D(vector<Mat> &_binaryMap)
+    inline void checkBorder_3D(vector<CustomMat> &_binaryMap)
     {
         uint slice = this->currentPosition.getZ();
 
@@ -379,7 +379,7 @@ public:
 
         case South:
 
-            if (this->currentPosition.getY() == _binaryMap[slice].rows - 1)
+            if (this->currentPosition.getY() == _binaryMap[slice].getRows() - 1)
             {
                 nextDirection = North;
             }
@@ -393,7 +393,7 @@ public:
             break;
 
         case East:
-            if (this->currentPosition.getX() == _binaryMap[slice].cols - 1)
+            if (this->currentPosition.getX() == _binaryMap[slice].getCols() - 1)
             {
                 nextDirection = West;
             }
@@ -464,7 +464,7 @@ public:
         }
     };
 
-    inline bool checkNextPosition_3D(Pos3d _nextPosition, vector<Mat> &_binaryMap, uchar _poreColor)
+    inline bool checkNextPosition_3D(Pos3d _nextPosition, std::vector<CustomMat> &_binaryMap, uchar _poreColor)
     {
         return (_nextPosition.isPore(_binaryMap, _poreColor));
     };

@@ -27,11 +27,11 @@ vector<TestResult> Pos3dTest::run()
 
 TestResult Pos3dTest::isPoreTest_ZerosMat2d()
 {
-	TestResult result("Pos3d::isPore[2d](cv::Mat::zeros)");
+	TestResult result("Pos3d::isPore[2d](cv::CustomMat::zeros)");
     Pos3d pos;
     int rows = 2; 
     int cols = 2;
-    Mat img = Mat::zeros(rows, cols, CV_8UC1);
+    CustomMat img = CustomMat(rows, cols);
     vector<bool> pores;
     uchar poreColor = 0;
     
@@ -56,7 +56,7 @@ TestResult Pos3dTest::isPoreTest_OnesMat2d()
     Pos3d pos;
     int rows = 2; 
     int cols = 3;
-    Mat img = Mat::ones(rows, cols, CV_8UC1);
+    CustomMat img(rows, cols, CustomMat::ones(rows, cols));
     vector<bool> pores;
     uchar poreColor = 0;
     
@@ -77,11 +77,11 @@ TestResult Pos3dTest::isPoreTest_OnesMat2d()
 
 TestResult Pos3dTest::isPoreTest_EyeMat2d()
 {
-	TestResult result("Pos3d::isPore[2d](cv::Mat::eye)");
+	TestResult result("Pos3d::isPore[2d](CustomMat::eye)");
     Pos3d pos;
     int rows = 3; 
     int cols = 3;
-    Mat img = Mat::eye(rows, cols, CV_8UC1);
+    CustomMat img(rows,cols,CustomMat::eye(rows, cols));
     vector<bool> pores;
     uchar poreColor = 0;
     
@@ -108,9 +108,9 @@ TestResult Pos3dTest::isPoreTest_ZerosMat3d()
     int rows = 2; 
     int cols = 2;
     int depth = 2;
-    vector<Mat> img;
+    std::vector<CustomMat> img;
     for(int s = 0; s < depth; s++)
-        img.push_back(Mat::zeros(rows, cols, CV_8UC1));
+        img.push_back(CustomMat(rows, cols));
 
     vector<bool> pores;
     for(int z = 0; z < depth; z++)
@@ -142,9 +142,9 @@ TestResult Pos3dTest::isPoreTest_OnesMat3d()
     int rows = 2; 
     int cols = 3;
     int depth = 4;
-    vector<Mat> img;
+    std::vector<CustomMat> img;
     for(int s = 0; s < depth; s++)
-        img.push_back(Mat::ones(rows, cols, CV_8UC1));
+        img.push_back(CustomMat(rows,cols,CustomMat::ones(rows, cols)));
 
     vector<bool> pores;
     for(int z = 0; z < depth; z++)
@@ -175,15 +175,15 @@ TestResult Pos3dTest::isPoreTest_OnesMat3d()
 
 TestResult Pos3dTest::isPoreTest_EyeMat3d()
 {
-	TestResult result("Pos3d::isPore[3d](cv::Mat::eye)");
+	TestResult result("Pos3d::isPore[3d](cv::CustomMat::eye)");
     Pos3d pos;
     uchar poreColor = 0;
     int rows = 2; 
     int cols = 2;
     int depth = 2;
-    vector<Mat> img;
+    std::vector<CustomMat> img;
     for(int s = 0; s < depth; s++)
-        img.push_back(Mat::eye(rows, cols, CV_8UC1));
+        img.push_back(CustomMat(rows,cols,CustomMat::eye(rows, cols)));
 
     vector<bool> pores;
     for(int z = 0; z < depth; z++)

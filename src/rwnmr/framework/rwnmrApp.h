@@ -55,10 +55,10 @@ public:
     string getArgsCommand(uint idx) { return this->args.getCommand(idx); }
     string getArgsPath(uint idx) { return this->args.getPath(idx); }
     
-    void buildEssentials();
+    void buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, std::vector<CustomMat>  image);
     void exec();    
 
-    void CPMG(uint command_idx);
+    void CPMG(CpmgConfig cpgm_config);
     void PFGSE(uint command_idx);
     void GA(uint command_idx);
     void MultiTau(uint command_idx);
