@@ -116,6 +116,23 @@ rwnmr_config = RwnmrConfig(
 
 # print(cpmg_config.path_to_field)
 # print(type(cpmg_config.path_to_field))
-list = np.array([1.0,9.0],dtype= np.uint8)
-print(rwnmr.CPMG(cpmg_config))
-print(rwnmr.RWNMR(rwnmr_config))
+mat = np.array([
+    [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ],
+    [
+        [10, 11, 12],
+        [13, 14, 15],
+        [16, 17, 18]
+    ],
+    [
+        [19, 20, 21],
+        [22, 23, 24],
+        [25, 26, 27]
+    ]
+], dtype=np.uint8)
+rwnmr.BitBlockMethod(mat)
+# print(rwnmr.CPMG(cpmg_config))
+# print(rwnmr.RWNMR(rwnmr_config))

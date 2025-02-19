@@ -1,10 +1,12 @@
 #ifndef BITBLOCK_H_
 #define BITBLOCK_H_
 
-#include "Defs.h"
 #include "Pos3d.h"
 #include "CustomMatrix.h"
+// include other project libs
 
+#include "../utils/BaseFunctions.h"
+#include "../utils/ProgressBar.h"
 // define 2D block properties
 #define ROWSPERBLOCK2D 8
 #define COLUMNSPERBLOCK2D 8

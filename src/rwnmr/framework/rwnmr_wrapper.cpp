@@ -6,7 +6,7 @@
 #include <iostream>
 #include "../configFiles/CpmgConfig.h"
 #include "../configFiles/RwnmrConfig.h"
-
+#include "./BitBlock.h"
 static PyObject* metodo1(PyObject* self, PyObject* args){
 
     PyArrayObject *np_array;
@@ -370,12 +370,59 @@ if (nameContent == NULL || walkersContent == NULL || walkersPlacementContent == 
     
     return PyUnicode_FromFormat("Nome do objeto: %s", rwnmr_config.getName().c_str());
 }
+
+
+static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
+    PyArrayObject *np_array;
+
+
+    if (!PyArg_ParseTuple(args, "O", &np_array)) {
+        return NULL; 
+    }else{
+
+    int rows = PyArray_DIM(np_array, 0);
+    int cols = PyArray_DIM(np_array, 1);
+    int depth = PyArray_DIM(np_array, 2);
+    std::vector<CustomMat> binaryMap;
+
+    uint8_t* dados = (uint8_t*)PyArray_DATA(np_array);
+
+    for (int d = 0; d < depth; ++d) {
+        uint8_t* slice_data = dados + d * rows * cols;
+        std::vector<uint8_t> vec_data(slice_data, slice_data + (rows * cols));
+        CustomMat data(rows, cols, vec_data);
+        binaryMap.push_back(data);
+    }
+    for (const auto& mat : binaryMap) {
+        for (int i = 0; i < mat.getRows(); ++i) {
+            for (int j = 0; j < mat.getCols(); ++j) {
+                std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    // std::vector<uint8_t> vec_data(dados, dados + (rows * cols));
+    // CustomMat data(rows, cols, vec_data);
+    // std::vector<CustomMat> binaryMap = {data};
+
+    // BitBlock bitBlock;
+    // bitBlock.createBlockMap(binaryMap, 0);
+    // bitBlock.saveBitBlockArray_2D("bitblock2D.txt");
+    printf("rows: %i\n cols: %i \n depth: %i \n", rows,cols, depth);
+    printf("%i", binaryMap.size());
+    Py_DECREF(np_array);
+    }
+    return PyUnicode_FromString("BitBlockMethod");
+
+}
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
     {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
     {"CPMG", (PyCFunction) CPMG,METH_VARARGS, "Testando CPMG"},
     {"recebe_objeto_classe", (PyCFunction) recebe_objeto_classe, METH_VARARGS, "Recebe um objeto Python e uma classe Python"},
     {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
+    {"BitBlockMethod", (PyCFunction) BitBlockMethod,METH_VARARGS, "Testando BitBlock"},
     {NULL, NULL}
 };
 

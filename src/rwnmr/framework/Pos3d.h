@@ -1,7 +1,16 @@
 #ifndef POS3D_H_
 #define POS3D_H_
 
-#include "Defs.h"
+// include string stream manipulation functions
+#include <iostream>
+#include <stdint.h>
+#include <stdlib.h>
+#include <vector>
+#include "CustomMatrix.h"
+typedef uint8_t uchar;
+using std::vector;
+using namespace std;
+
 
 class Pos3d
 {
@@ -22,7 +31,7 @@ public:
         this->z = other.z;
     }
 
-    inline bool isPore(std::vector<CustomMat> &_binaryMap, uchar _poreColor)
+    inline bool isPore(std::vector<CustomMat> _binaryMap, uchar _poreColor)
     {
         if (_binaryMap.at(z).at(y, x) == _poreColor)
             return true;
@@ -30,7 +39,7 @@ public:
             return false;
     };
 
-    inline bool isPore(const CustomMat &_binaryMap, uchar _poreColor) const {
+    inline bool isPore(const CustomMat _binaryMap, uchar _poreColor) const {
         if (_binaryMap.at(y, x) == _poreColor)
             return true;
         else
