@@ -376,24 +376,28 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
     PyArrayObject *np_array;
 
 
-    if (!PyArg_ParseTuple(args, "O", &np_array)) {
+    int rows;
+    int cols;
+    int depth;
+
+    if (!PyArg_ParseTuple(args, "Oiii", &np_array, &depth, &rows, &cols)) {
         return NULL; 
     }else{
 
-    int rows = PyArray_DIM(np_array, 0);
-    int cols = PyArray_DIM(np_array, 1);
-    int depth = PyArray_DIM(np_array, 2);
+    uint8_t* dados = (uint8_t*)PyArray_DATA(np_array);
+    for (npy_intp i = 0; i < PyArray_SIZE(np_array); ++i) {
+        printf("%i ", dados[i]);
+    }
     std::vector<CustomMat> binaryMap;
 
-    uint8_t* dados = (uint8_t*)PyArray_DATA(np_array);
-
     for (int d = 0; d < depth; ++d) {
-        uint8_t* slice_data = dados + d * rows * cols;
+        uint8_t* slice_data = dados + (d * rows * cols);
         std::vector<uint8_t> vec_data(slice_data, slice_data + (rows * cols));
-        CustomMat data(rows, cols, vec_data);
+        CustomMat data = CustomMat(rows, cols, vec_data);
         binaryMap.push_back(data);
     }
-    for (const auto& mat : binaryMap) {
+    for (int d = 0; d < depth; ++d) {
+        CustomMat mat = binaryMap[d];
         for (int i = 0; i < mat.getRows(); ++i) {
             for (int j = 0; j < mat.getCols(); ++j) {
                 std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
@@ -402,15 +406,21 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
         }
         std::cout << std::endl;
     }
+
     // std::vector<uint8_t> vec_data(dados, dados + (rows * cols));
     // CustomMat data(rows, cols, vec_data);
     // std::vector<CustomMat> binaryMap = {data};
 
-    // BitBlock bitBlock;
-    // bitBlock.createBlockMap(binaryMap, 0);
-    // bitBlock.saveBitBlockArray_2D("bitblock2D.txt");
+    CustomMat data = CustomMat(rows, cols, std::vector<uint8_t>(dados, dados + (rows * cols)));
+    std::vector<CustomMat> binaryMap2 = {data};
+
+    BitBlock bitBlock;
+    BitBlock bitBlock2;
+    bitBlock.createBlockMap(binaryMap, 0);
+    bitBlock2.createBlockMap(binaryMap2, 0);
     printf("rows: %i\n cols: %i \n depth: %i \n", rows,cols, depth);
-    printf("%i", binaryMap.size());
+    bitBlock2.saveBitBlockArray_2D("bitblock2D.txt");
+    bitBlock.saveBitBlockArray_3D("bitblock3D.txt");
     Py_DECREF(np_array);
     }
     return PyUnicode_FromString("BitBlockMethod");
