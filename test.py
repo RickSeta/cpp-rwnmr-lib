@@ -1,5 +1,23 @@
 import rwnmr
 import numpy as np
+from PIL import Image
+from os import listdir
+
+def ler_imagem(img_dir,num_slices, slice_inicial=0):
+    lista_slices = listdir(img_dir)
+    img_array =[]
+    for slice in range(slice_inicial, num_slices):
+        img= np.array(Image.open(img_dir +"/" + lista_slices[slice]).convert("L"),dtype=np.uint8)
+
+        img_array.append(img)
+    
+    return img_array
+
+def binarize(img_array, cor_poro):
+    img_array = np.array(img_array)
+    img_array[img_array == cor_poro] = 1
+    img_array[img_array != 1] = 0
+    return img_array
 
 class UctConfig:
     def __init__(self, dir_path, filename, first_idx, digits, extension, slices, resolution, voxel_division, pore_color):
@@ -117,8 +135,8 @@ rwnmr_config = RwnmrConfig(
 # print(cpmg_config.path_to_field)
 # print(type(cpmg_config.path_to_field))
 mat = np.array([[
-                    [1, 0, 0, 0,   0, 0, 0, 0],
-                    [1, 0, 0, 0,   0, 0, 0, 0],
+                    [1, 1, 0, 0,   1, 0, 0, 0],
+                    [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     
@@ -127,12 +145,12 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],[
-                    [0, 0, 0, 0,   0, 0, 0, 0],
+                    [0, 0, 0, 0,   1, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     
-                    [1, 0, 0, 0,   0, 0, 0, 0],
+                    [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
@@ -158,6 +176,9 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],], dtype=np.uint8) 
 
-rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
+# rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
 # print(rwnmr.CPMG(cpmg_config))
 # print(rwnmr.RWNMR(rwnmr_config))
+binarized = binarize(ler_imagem("./img_reader/testsimgs", 4, 0), 255)
+print(binarized)
+rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)

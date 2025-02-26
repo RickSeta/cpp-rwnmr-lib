@@ -426,6 +426,7 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
     return PyUnicode_FromString("BitBlockMethod");
 
 }
+
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
     {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
