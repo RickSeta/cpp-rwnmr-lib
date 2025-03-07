@@ -9,8 +9,8 @@ setup(
     ext_modules=[
         Extension(
             "rwnmr",  # Nome do módulo
-            ['src/rwnmr/framework/rwnmr_wrapper.cpp','src/rwnmr/configFiles/CpmgConfig.cpp','src/rwnmr/configFiles/RwnmrConfig.cpp', 'src/rwnmr/framework/BitBlock.cpp'], # Arquivos C
-            include_dirs=[numpy.get_include(), 'src/rwnmr/framework','/usr/include/eigen3'],  # Inclua o diretório do seu cabeçalho Defs.h
+            ['src/rwnmr/framework/rwnmr_wrapper.cpp','src/rwnmr/configFiles/CpmgConfig.cpp','src/rwnmr/configFiles/RwnmrConfig.cpp','src/rwnmr/configFiles/UctConfig.cpp', 'src/rwnmr/framework/BitBlock.cpp',], # Arquivos C
+            include_dirs=[numpy.get_include(), 'src/rwnmr/framework','/usr/include/eigen3', 'src/rwnmr/configFiles'],  # Inclua o diretório do seu cabeçalho Defs.h
             extra_compile_args=['-std=c99'], # Adicione esta linha para usar o padrão C99
             language="c++", # Adicione esta linha para usar o compilador C++
         )

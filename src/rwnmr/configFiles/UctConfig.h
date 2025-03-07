@@ -9,8 +9,6 @@ using namespace std;
 class UctConfig : public BaseConfig
 {
 private:
-    string DIR_PATH;
-    string FILENAME;
     uint FIRST_IDX;
     uint DIGITS;
     string EXTENSION;
@@ -18,16 +16,10 @@ private:
     double RESOLUTION;
     uint VOXEL_DIVISION;
     uint8_t PORE_COLOR;
-    string IMG_FILES_LIST;
-    vector<string> IMG_FILES;
 
 public:
     // default constructors
-    UctConfig():BaseConfig(){};
-    UctConfig(const string configFile, const string croot);
-
-    //copy constructors
-    UctConfig(const UctConfig &otherConfig);
+    UctConfig();
 
     // default destructor
     virtual ~UctConfig()
@@ -36,11 +28,7 @@ public:
     } 
 
     vector<string> checkConfig();
-    void setConfig(const string dirPath, const string filename, const string firstIdx, const string digits, const string extension, const string slices, const string resolution, const string voxelDivision, const string poreColor);
-    
     // -- Read methods
-    void readDirPath(string s);
-    void readFilename(string s);
     void readFirstIdx(string s);
     void readDigits(string s);
     void readExtension(string s);
@@ -48,12 +36,8 @@ public:
     void readResolution(string s);
     void readVoxelDivision(string s);
     void readPoreColor(string s);
-    void readImgFilesList(string s);
-    void readImgFiles();
 
     // -- Set methods
-    void setDirPath(string s){ this->DIR_PATH = s;}
-    void setFilename(string s){ this->FILENAME = s;}
     void setFirstIdx(uint s){ this->FIRST_IDX = s; }
     void setDigits(uint s){ this->DIGITS = s; }
     void setExtension(string s){ this->EXTENSION = s; }
@@ -61,12 +45,8 @@ public:
     void setResolution(double s){ this->RESOLUTION = s; }
     void setVoxelDivision(uint s){ this->VOXEL_DIVISION = s; }
     void setPoreColor(uint s){ this->PORE_COLOR = s; }
-    void setImgFilesList(string s){ this->IMG_FILES_LIST = s; }
-    void setImgFiles(vector<string> s){ this->IMG_FILES = s; }
 
     // -- Get methods
-    string getDirPath(){ return this->DIR_PATH;}
-    string getFilename(){ return this->FILENAME;}
     uint getFirstIdx(){ return this->FIRST_IDX;}
     uint getDigits(){ return this->DIGITS;}
     string getExtension(){ return this->EXTENSION;}
@@ -74,17 +54,6 @@ public:
     double getResolution(){ return this->RESOLUTION;}
     uint getVoxelDivision(){ return this->VOXEL_DIVISION;}
     uint8_t getPoreColor(){ return this->PORE_COLOR;}
-    string getImgFilesList(){ return this->IMG_FILES_LIST;}
-    vector<string> getImgFiles(){ return this->IMG_FILES;}
-    string getImgFile(uint idx){ return this->IMG_FILES[idx];}
-
-    void createImgFileList();
-    inline string convertFileIDToString(uint id, uint digits)
-    {
-        stringstream result;
-        result << std::setfill('0') << std::setw(digits) << id;
-        return result.str();
-    }
 };
 
 #endif

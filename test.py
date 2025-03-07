@@ -20,9 +20,8 @@ def binarize(img_array, cor_poro):
     return img_array
 
 class UctConfig:
-    def __init__(self, dir_path, filename, first_idx, digits, extension, slices, resolution, voxel_division, pore_color):
-        self.dir_path = dir_path
-        self.filename = filename
+    def __init__(self, first_idx, digits, extension, slices, resolution, voxel_division, pore_color):
+
         self.first_idx = first_idx
         self.digits = digits
         self.extension = extension
@@ -93,7 +92,7 @@ class RwnmrConfig:
         self.max_rwsteps = max_rwsteps
         self.seed = seed
 # Example usage
-uct_config = UctConfig("path_to_folder_with_images", "imagefile_prefix", 0, 1, ".png", 1, 1.0, 0, 0)
+uct_config = UctConfig("10", "1", ".png", "1", "1.0", "0", "0")
 cpmg_config = CpmgConfig("False", "3000.0", "image-based", "False", "uniform", "10.0", "2", "False", "0.1", "100000.0", "True", "256", "-4", "2", "512", "0", "0.00", "True", "False", "False", "False", "False","False")
 rwnmr_config = RwnmrConfig(
     name="examplename",
@@ -179,6 +178,7 @@ mat = np.array([[
 # rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
 # print(rwnmr.CPMG(cpmg_config))
 # print(rwnmr.RWNMR(rwnmr_config))
-binarized = binarize(ler_imagem("./img_reader/testsimgs", 4, 0), 255)
-print(binarized)
-rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)
+print(rwnmr.UCT(uct_config))
+# binarized = binarize(ler_imagem("./img_reader/testsimgs", 4, 0), 255)
+# print(binarized)
+# rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)

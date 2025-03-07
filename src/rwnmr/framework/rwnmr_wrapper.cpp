@@ -6,6 +6,7 @@
 #include <iostream>
 #include "../configFiles/CpmgConfig.h"
 #include "../configFiles/RwnmrConfig.h"
+#include "../configFiles/UctConfig.h"
 #include "./BitBlock.h"
 static PyObject* metodo1(PyObject* self, PyObject* args){
 
@@ -427,6 +428,50 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
 
 }
 
+static PyObject* UCT(PyObject* self, PyObject* args){
+    PyObject* UCT_object;
+    if(!PyArg_ParseTuple(args, "O", &UCT_object)){
+        Py_DecRef(UCT_object);
+        return NULL;
+    }
+    UctConfig uct_config;
+    
+    PyObject* firstIdxContent = PyObject_GetAttrString(UCT_object, "first_idx");
+    PyObject* digitsContent = PyObject_GetAttrString(UCT_object, "digits");
+    PyObject* extensionContent = PyObject_GetAttrString(UCT_object, "extension");
+    PyObject* slicesContent = PyObject_GetAttrString(UCT_object, "slices");
+    PyObject* resolutionContent = PyObject_GetAttrString(UCT_object, "resolution");
+    PyObject* voxelDivisionContent = PyObject_GetAttrString(UCT_object, "voxel_division");
+    PyObject* poreColorContent = PyObject_GetAttrString(UCT_object, "pore_color");
+
+    if (firstIdxContent == NULL || digitsContent == NULL || extensionContent == NULL || slicesContent == NULL ||
+        resolutionContent == NULL || voxelDivisionContent == NULL || poreColorContent == NULL) {
+        Py_XDECREF(firstIdxContent);
+        Py_XDECREF(digitsContent);
+        Py_XDECREF(extensionContent);
+        Py_XDECREF(slicesContent);
+        Py_XDECREF(resolutionContent);
+        Py_XDECREF(voxelDivisionContent);
+        Py_XDECREF(poreColorContent);
+        return NULL;
+    }
+    uct_config.readDigits(PyUnicode_AsUTF8(digitsContent));
+    uct_config.readExtension(PyUnicode_AsUTF8(extensionContent));
+    uct_config.readSlices(PyUnicode_AsUTF8(slicesContent));
+    uct_config.readResolution(PyUnicode_AsUTF8(resolutionContent));
+    uct_config.readVoxelDivision(PyUnicode_AsUTF8(voxelDivisionContent));
+    uct_config.readPoreColor(PyUnicode_AsUTF8(poreColorContent));
+    uct_config.readFirstIdx(PyUnicode_AsUTF8(firstIdxContent));
+    Py_DECREF(firstIdxContent);
+    Py_DECREF(digitsContent);
+    Py_DECREF(extensionContent);
+    Py_DECREF(slicesContent);
+    Py_DECREF(resolutionContent);
+    Py_DECREF(voxelDivisionContent);
+    Py_DECREF(poreColorContent);
+    Py_DECREF(UCT_object);
+    return PyUnicode_FromFormat("Nome do objeto: %s", uct_config.getExtension().c_str());
+};
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
     {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
@@ -434,6 +479,8 @@ static struct PyMethodDef methods[] = {
     {"recebe_objeto_classe", (PyCFunction) recebe_objeto_classe, METH_VARARGS, "Recebe um objeto Python e uma classe Python"},
     {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
     {"BitBlockMethod", (PyCFunction) BitBlockMethod,METH_VARARGS, "Testando BitBlock"},
+    {"UCT", (PyCFunction) UCT,METH_VARARGS, "Testando UCT"},
+    // {"CPMG_EXECUTE", (PyCFunction) CPMG_EXECUTE,METH_VARARGS, "Testando CPMG_EXECUTE"},
     {NULL, NULL}
 };
 
