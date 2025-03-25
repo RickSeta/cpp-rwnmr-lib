@@ -1342,7 +1342,6 @@ void Model::saveInfo(string filedir)
     fileObject << ">>> RWNMR SIMULATION PARAMETERS: " << (*this).getName() << endl;
     fileObject << "------------------------------------------------------" << endl;
     fileObject << "Data path: " << (*this).getDbPath() + (*this).getName() << endl;
-    fileObject << "Image path: " << this->uCT_config.getImgFile(0) << endl;
     fileObject << "Image resolution (um/voxel): " << (*this).getStepLength() << endl;
     fileObject << "Diffusion coefficient (um^2/ms): " << (*this).getDiffusionCoefficient() << endl;
     fileObject << "Number of images: " << (*this).getUctConfig().getSlices() << endl;
@@ -1394,7 +1393,6 @@ void Model::saveImageInfo(string filedir)
     }
 
     // write info 
-    fileObject << "image path: " << this->uCT_config.getImgFile(0) << endl;
     fileObject << "width(x): " << this->bitBlock->getImageColumns() << endl;
     fileObject << "height(y): " << this->bitBlock->getImageRows() << endl;
     fileObject << "depth(z): " << this->bitBlock->getImageDepth() << endl;
@@ -1516,7 +1514,6 @@ void Model::printDetails()
     cout << ">>> NMR SIMULATION 3D PARAMETERS: " << this->name << endl;
     cout << "------------------------------------------------------" << endl;
     cout << "Data path: " << this->dbPath + this->name << endl;
-    cout << "Image path: " << this->uCT_config.getImgFile(0) << endl;
     cout << "Image resolution (um/voxel): " << this->stepLength << endl;
     cout << "Diffusion coefficient (um^2/ms): " << this->diffusionCoefficient << endl;
     cout << "Number of images: " << (*this).getUctConfig().getSlices() << endl;

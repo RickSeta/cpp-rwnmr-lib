@@ -18,8 +18,6 @@
 #include <stdlib.h>
 
 using namespace std;
-// include OpenCV core functions
-
 // include OpenMP for multicore implementation
 #include <omp.h>
 
