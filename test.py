@@ -15,8 +15,17 @@ def ler_imagem(img_dir,num_slices, slice_inicial=0):
 
 def binarize(img_array, cor_poro):
     img_array = np.array(img_array)
-    img_array[img_array == cor_poro] = 1
-    img_array[img_array != 1] = 0
+    print(cor_poro)
+    # print("==============")
+    # print(img_array)
+    # print("==============")
+    for pixel in img_array:
+        pixel[pixel != cor_poro] = 0
+        pixel[pixel == cor_poro] = 1
+
+    # print("==============")
+    # print(img_array)
+    # print("==============")
     return img_array
 
 class UctConfig:
@@ -134,7 +143,7 @@ rwnmr_config = RwnmrConfig(
 # print(cpmg_config.path_to_field)
 # print(type(cpmg_config.path_to_field))
 mat = np.array([[
-                    [1, 1, 0, 0,   1, 0, 0, 0],
+                    [1, 0, 0, 0,   0, 1, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
@@ -144,7 +153,7 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],[
-                    [0, 0, 0, 0,   1, 0, 0, 0],
+                    [1, 0, 0, 0,   1, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
@@ -175,10 +184,10 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],], dtype=np.uint8) 
 
-# rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
+rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
 # print(rwnmr.CPMG(cpmg_config))
 # print(rwnmr.RWNMR(rwnmr_config))
-print(rwnmr.UCT(uct_config))
-# binarized = binarize(ler_imagem("./img_reader/testsimgs", 4, 0), 255)
+# print(rwnmr.UCT(uct_config))
+# binarized = binarize(ler_imagem("./img_reader/testsimgs", 2, 0), 255)
 # print(binarized)
 # rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)
