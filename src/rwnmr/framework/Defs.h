@@ -27,8 +27,6 @@ using namespace std;
 #include "../math/RNG/mRNG.h"
 #include "../math/RNG/xorshift.h"
 #include "../math/RNG/randomIndex.h"
-#include "../math/Laplace/tikhonov.h"
-#include "../math/Laplace/include/nmrinv_core.h"
 #include "../configFiles/ConfigFiles.h"
 
 using namespace std;

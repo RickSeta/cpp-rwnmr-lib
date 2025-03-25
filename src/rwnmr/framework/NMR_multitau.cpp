@@ -125,7 +125,7 @@ void NMR_multitau::runCPMG()
     }
     if((*this).getMultitauConfig().getCompleteDecay())
     {
-        (*this).getCPMG()->applyLaplace();
+        cout << "Laplace removed from C" << endl;
     }
 }
 

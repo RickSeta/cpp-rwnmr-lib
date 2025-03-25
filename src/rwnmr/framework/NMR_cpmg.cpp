@@ -62,7 +62,6 @@ void NMR_cpmg::run()
 {
     (*this).build();
     (*this).run_simulation();
-    (*this).applyLaplace();
     (*this).save();
 }
 
@@ -357,75 +356,6 @@ void NMR_cpmg::normalizeSignal()
     {
         this->signalAmps[echo] = normalizer * this->signalAmps[echo]; 
     } 
-}
-
-// apply laplace inversion explicitly
-void NMR_cpmg::applyLaplace()
-{   
-    cout << "Recovering T2 distribution [Tikhonov-ILT]...";
-    double tick = omp_get_wtime();
-
-    // check if energy decay was done
-    if(this->signalAmps.size() == 0) 
-    {
-        cout << "no data available, could not apply inversion." << endl;
-        return; 
-    }
-
-    // reset T2 distribution from previous simulation
-    if(this->T2bins.size() > 0) this->T2bins.clear();
-    if(this->T2amps.size() > 0) this->T2amps.clear();
-
-    // get copy of decay info and remove first elements
-    vector<double> decay = (*this).getSignalAmps();
-    vector<double> times = this->getSignalTimes();
-    times.erase(times.begin());
-    decay.erase(decay.begin());     
-
-    NMRInverterConfig nmr_inv_config(this->CPMG_config.getMinT2(), 
-                                     this->CPMG_config.getMaxT2(),
-                                     this->CPMG_config.getUseT2Logspace(),
-                                     this->CPMG_config.getNumT2Bins(),
-                                     this->CPMG_config.getMinLambda(),
-                                     this->CPMG_config.getMaxLambda(),
-                                     this->CPMG_config.getNumLambdas(),
-                                     this->CPMG_config.getPruneNum(),
-                                     this->CPMG_config.getNoiseAmp());
-
-    NMRInverter nmr_inverter;
-    nmr_inverter.set_config(nmr_inv_config, times);
-    nmr_inverter.find_best_lambda(decay.size(), decay.data());
-    nmr_inverter.invert(decay.size(), decay.data());
-    for(uint i = 0; i < nmr_inverter.used_t2_bins.size(); i++)
-    {
-        this->T2bins.push_back(nmr_inverter.used_t2_bins[i]);
-        this->T2amps.push_back(nmr_inverter.used_t2_amps[i]);
-    }
-
-
-    // Get noise vector
-    vector<double> rawNoise = nmr_inverter.get_raw_noise();
-    vector<double> newNoise;
-    newNoise.reserve(this->signalAmps.size());
-    newNoise.push_back(0.0);
-    if(rawNoise.size() == (this->signalAmps.size() - 1))
-    {
-        for(int idx = 1; idx < this->signalAmps.size(); idx++)
-        {
-            newNoise.push_back(rawNoise[idx-1]);
-        }
-    } else
-    {
-        for(int idx = 1; idx < this->signalAmps.size(); idx++)
-        {
-            newNoise.push_back(0.0);
-        }
-    }
-    (*this).setNoise(newNoise);
-
-    double time = omp_get_wtime() - tick;
-    cout << "Done in " << time << " secs." << endl;
-    cout << "filtering lambda: " << nmr_inverter.get_inversion_lambda() << endl;
 }
 
 // -- Savings

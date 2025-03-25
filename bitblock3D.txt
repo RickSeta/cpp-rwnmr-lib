@@ -1,0 +1,8 @@
+blocks, bRows, bColumns, bDepth, imgRows, imgColumns, imgDepth, 
+4, 2, 2, 1, 8, 8, 4
+
+blockID, blockData
+0, 65537
+1, 65538
+2, 0
+3, 0

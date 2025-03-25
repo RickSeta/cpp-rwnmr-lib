@@ -106,7 +106,6 @@ public:
     void resetSignal();
     void normalizeSignal();
     void applyBulk();
-    void applyLaplace();
 	void save();
 	void writeWalkers();
 	void writeHistogram();
