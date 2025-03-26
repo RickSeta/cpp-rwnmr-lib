@@ -36,14 +36,8 @@ static PyObject* metodo2(PyObject* self, PyObject* args){
     PyObject* ret = PyUnicode_FromFormat("Hello from %U!", texto);
     return ret;
 };
-static PyObject* CPMG(PyObject* self, PyObject* args){
-    PyObject* CPMG_object;
+CpmgConfig CPMG(PyObject* CPMG_object){
 
-    if(!PyArg_ParseTuple(args, "O", &CPMG_object )){
-        Py_DecRef(CPMG_object);
-        return NULL;
-    }
-    
     CpmgConfig cpmg_config;
 
     PyObject* applyBulk = PyObject_GetAttrString(CPMG_object, "apply_bulk");
@@ -98,7 +92,7 @@ static PyObject* CPMG(PyObject* self, PyObject* args){
         Py_XDECREF(saveDecay);
         Py_XDECREF(saveHistogram);
         Py_XDECREF(saveHistogramList);
-        return NULL;
+        return CpmgConfig();
     }
 
     cpmg_config.setConfig(
@@ -150,10 +144,9 @@ static PyObject* CPMG(PyObject* self, PyObject* args){
     Py_DECREF(saveDecay);
     Py_DECREF(saveHistogram);
     Py_DECREF(saveHistogramList);
-    return PyUnicode_FromFormat("Caminho para o campo: %s", cpmg_config.getMethod().c_str());
+    return cpmg_config;
     
 }
-
 static PyObject *recebe_objeto_classe(PyObject *self, PyObject *args) {
     PyObject *obj_python;
     PyObject *classe_python;
@@ -181,13 +174,8 @@ static PyObject *recebe_objeto_classe(PyObject *self, PyObject *args) {
 
     Py_RETURN_NONE;
 }
-static PyObject* RWNMR(PyObject* self, PyObject* args){
-    PyObject* RWNMR_object;
-
-    if(!PyArg_ParseTuple(args, "O", &RWNMR_object)){
-        Py_DecRef(RWNMR_object);
-        return NULL;
-    }
+RwnmrConfig RWNMR(PyObject* RWNMR_object) {
+    
     printf("Entrou no RWNMR\n");
     RwnmrConfig rwnmr_config;
     PyObject* walkersContent = PyObject_GetAttrString(RWNMR_object, "walkers");
@@ -298,7 +286,7 @@ if (nameContent == NULL || walkersContent == NULL || walkersPlacementContent == 
         Py_XDECREF(echoesPerKernelContent);
         Py_XDECREF(reduceInGPUContent);
         Py_XDECREF(maxRWStepsContent);
-        return NULL;
+        return RwnmrConfig(); 
     }
     rwnmr_config.readName(PyUnicode_AsUTF8(nameContent));
     rwnmr_config.readWalkers(PyUnicode_AsUTF8(walkersContent));
@@ -369,9 +357,8 @@ if (nameContent == NULL || walkersContent == NULL || walkersPlacementContent == 
     Py_DECREF(reduceInGPUContent);
     Py_DECREF(maxRWStepsContent);
     
-    return PyUnicode_FromFormat("Nome do objeto: %s", rwnmr_config.getName().c_str());
+    return rwnmr_config;
 }
-
 
 static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
     PyArrayObject *np_array;
@@ -428,12 +415,7 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
 
 }
 
-static PyObject* UCT(PyObject* self, PyObject* args){
-    PyObject* UCT_object;
-    if(!PyArg_ParseTuple(args, "O", &UCT_object)){
-        Py_DecRef(UCT_object);
-        return NULL;
-    }
+UctConfig UCT(PyObject* UCT_object){
     UctConfig uct_config;
     
     PyObject* firstIdxContent = PyObject_GetAttrString(UCT_object, "first_idx");
@@ -453,7 +435,7 @@ static PyObject* UCT(PyObject* self, PyObject* args){
         Py_XDECREF(resolutionContent);
         Py_XDECREF(voxelDivisionContent);
         Py_XDECREF(poreColorContent);
-        return NULL;
+        return UctConfig();
     }
     uct_config.readDigits(PyUnicode_AsUTF8(digitsContent));
     uct_config.readExtension(PyUnicode_AsUTF8(extensionContent));
@@ -470,17 +452,79 @@ static PyObject* UCT(PyObject* self, PyObject* args){
     Py_DECREF(voxelDivisionContent);
     Py_DECREF(poreColorContent);
     Py_DECREF(UCT_object);
-    return PyUnicode_FromFormat("Nome do objeto: %s", uct_config.getExtension().c_str());
+    return uct_config;
 };
+
+
+static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
+    printf("Entrou no CPMG_EXECUTE\n");
+    PyObject* CPMG_object;
+    PyObject* RWNMR_object;
+    PyObject* UCT_object;
+    PyArrayObject* image_object;
+    int rows;
+    int cols;
+    int depth;
+    if(!PyArg_ParseTuple(args, "OOOOiii", &CPMG_object, &RWNMR_object, &UCT_object, &image_object, &depth, &rows, &cols)){
+        Py_DECREF(CPMG_object);
+        Py_DECREF(RWNMR_object);
+        Py_DECREF(UCT_object);
+        Py_DECREF(image_object);
+        return NULL;
+    }
+    printf("Entrou no CPMG_EXECUTE\n");
+    //Image retrieval
+    uint8_t* dados = (uint8_t*)PyArray_DATA(image_object);
+    std::vector<CustomMat> binaryMap;
+    for (int d = 0; d < depth; ++d) {
+        uint8_t* slice_data = dados + (d * rows * cols);
+        std::vector<uint8_t> vec_data(slice_data, slice_data + (rows * cols));
+        CustomMat data = CustomMat(rows, cols, vec_data);
+        binaryMap.push_back(data);
+    }
+    printf("Passou a leitura da imagem\n");
+    RwnmrConfig rwnmr_config = RWNMR(RWNMR_object);
+    printf("Passou a leitura do RWNMR\n");
+    UctConfig uCT_Config = UCT(UCT_object);
+    printf("Passou a leitura do UCT\n");
+    CpmgConfig cpmg_config = CPMG(CPMG_object);
+    printf("Passou a leitura do CPMG\n");
+    Py_DECREF(CPMG_object);
+    Py_DECREF(RWNMR_object);
+    Py_DECREF(UCT_object);
+    Py_DECREF(image_object);
+
+    std::cout << "Image Data:" << std::endl;
+    for (int d = 0; d < depth; ++d) {
+        CustomMat mat = binaryMap[d];
+        for (int i = 0; i < mat.getRows(); ++i) {
+            for (int j = 0; j < mat.getCols(); ++j) {
+                std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "CPMG Config - Apply Bulk: " << cpmg_config.getApplyBulk() << std::endl;
+    std::cout << "RWNMR Config - Name: " << rwnmr_config.getName() << std::endl;
+    std::cout << "UCT Config - First Index: " << uCT_Config.getFirstIdx() << std::endl;
+
+    // rwnmrApp app;
+    // app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
+    return PyUnicode_FromString("CPMG execution method");;
+};
+
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
     {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
-    {"CPMG", (PyCFunction) CPMG,METH_VARARGS, "Testando CPMG"},
+    // {"CPMG", (PyCFunction) CPMG,METH_VARARGS, "Testando CPMG"},
     {"recebe_objeto_classe", (PyCFunction) recebe_objeto_classe, METH_VARARGS, "Recebe um objeto Python e uma classe Python"},
-    {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
+    // {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
     {"BitBlockMethod", (PyCFunction) BitBlockMethod,METH_VARARGS, "Testando BitBlock"},
-    {"UCT", (PyCFunction) UCT,METH_VARARGS, "Testando UCT"},
-    // {"CPMG_EXECUTE", (PyCFunction) CPMG_EXECUTE,METH_VARARGS, "Testando CPMG_EXECUTE"},
+    // {"UCT", (PyCFunction) UCT,METH_VARARGS, "Testando UCT"},
+    {"CPMG_EXECUTE", (PyCFunction) CPMG_EXECUTE,METH_VARARGS, "Testando CPMG_EXECUTE"},
+    
     {NULL, NULL}
 };
 
