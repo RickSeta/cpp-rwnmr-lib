@@ -143,7 +143,7 @@ rwnmr_config = RwnmrConfig(
 # print(cpmg_config.path_to_field)
 # print(type(cpmg_config.path_to_field))
 mat = np.array([[
-                    [1, 0, 0, 0,   0, 1, 0, 0],
+                    [0, 0, 0, 0,   0, 1, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
@@ -184,10 +184,11 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],], dtype=np.uint8) 
 
-rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
+# rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
 # print(rwnmr.CPMG(cpmg_config))
 # print(rwnmr.RWNMR(rwnmr_config))
 # print(rwnmr.UCT(uct_config))
 # binarized = binarize(ler_imagem("./img_reader/testsimgs", 2, 0), 255)
 # print(binarized)
 # rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)
+rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, mat,  mat.shape[0], mat.shape[1], mat.shape[2] )
