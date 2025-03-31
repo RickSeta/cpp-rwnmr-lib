@@ -57,7 +57,9 @@ class CustomBuildExt(build_ext):
 
 setup(
     name="rwnmr",
-    version=1.5,
+    version=2.0, 
+    download_url="https://github.com/RickSeta/cpp-rwnmr-lib",
+    author_email="rickseta@gmail.com",
     ext_modules=[
         Extension(
             "rwnmr",  # Nome do módulo
@@ -65,7 +67,6 @@ setup(
             ,
             include_dirs=[
                 'src/rwnmr/framework',
-                '/usr/include/eigen3',
                 'src/rwnmr/configFiles',
             ],
             extra_compile_args=['-std=c++11'], 
@@ -73,7 +74,7 @@ setup(
         )
     ],
     cmdclass={'build_ext': CustomBuildExt},
-    install_requires=['numpy'],
+    install_requires=['numpy', 'pillow'],
     setup_requires=['numpy'],
 )
 #se não funcionar faça pip install --upgrade setuptools wheel 
