@@ -1,7 +1,6 @@
 #ifndef RWNMRAPP_H_
 #define RWNMRAPP_H_
 
-#include "Defs.h"
 #include "Model.h"
 #include "MapFilter.h"
 #include "NMR_cpmg.h"

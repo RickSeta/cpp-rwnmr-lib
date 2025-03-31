@@ -297,7 +297,7 @@ void Model::save()
     double time = omp_get_wtime();
     cout << "saving results:" << endl;
     (*this).saveInfo(this->dir);
-
+    printf("image info saved");
     ProgressBar pBar(3.0);
 
     if(this->rwNMR_config.getSaveImgInfo())
@@ -1333,6 +1333,7 @@ void Model::saveInfo(string filedir)
     fileObject.open(filename, ios::out);
     if (fileObject.fail())
     {
+        cout << "Save info not open file" << endl;
         cout << "Could not open file from disc." << endl;
         exit(1);
     }

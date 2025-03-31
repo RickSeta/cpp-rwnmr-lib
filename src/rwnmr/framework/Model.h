@@ -6,6 +6,11 @@
 #include "Walker.h"
 #include "CollisionHistogram.h"
 #include "CustomMatrix.h"
+#include "../configFiles/ConfigFiles.h"
+#include "../math/RNG/mRNG.h"
+#include "../math/RNG/xorshift.h"
+#include "../math/RNG/randomIndex.h"
+#define TWO_PI (6.2831853071795864769252867665590057683943)
 
 class Model
 {

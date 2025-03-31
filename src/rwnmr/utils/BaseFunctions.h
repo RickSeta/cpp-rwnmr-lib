@@ -149,20 +149,34 @@ class BaseFunctions
         cout << (finish - start) << endl;
     }
 
-    static void createDirectory(string path, string name)
+#include <sys/stat.h>
+#include <sys/types.h>
+
+static void createDirectory(string path, string name)
+{
+    string fullPath = path + name;
+
+    size_t pos = 0;
+    while ((pos = fullPath.find('/', pos)) != string::npos)
     {
-        string fullPath = path + name;
-
-        char directory[fullPath.size() + 1];
-        strcpy(directory, fullPath.c_str());
-
-        struct stat st = {0};
-
-        if (stat(directory, &st) == -1)
+        string subPath = fullPath.substr(0, pos++);
+        if (!subPath.empty())
         {
-            mkdir(directory, 0700);
+            struct stat st = {0};
+            if (stat(subPath.c_str(), &st) == -1)
+            {
+                mkdir(subPath.c_str(), 0700);
+            }
         }
     }
+
+    // Create the final directory
+    struct stat st = {0};
+    if (stat(fullPath.c_str(), &st) == -1)
+    {
+        mkdir(fullPath.c_str(), 0700);
+    }
+}
 
     template <typename T>
 	static vector<T> concatenateVectors(vector<T> v1, vector<T> v2)

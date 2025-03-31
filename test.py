@@ -14,18 +14,12 @@ def ler_imagem(img_dir,num_slices, slice_inicial=0):
     return img_array
 
 def binarize(img_array, cor_poro):
+    print("Binarizing images....")
     img_array = np.array(img_array)
-    print(cor_poro)
-    # print("==============")
-    # print(img_array)
-    # print("==============")
     for pixel in img_array:
-        pixel[pixel != cor_poro] = 0
-        pixel[pixel == cor_poro] = 1
-
-    # print("==============")
-    # print(img_array)
-    # print("==============")
+        pixel[pixel != cor_poro] = 1
+        pixel[pixel == cor_poro] = 0
+    print("Images binarized")
     return img_array
 
 class UctConfig:
@@ -101,8 +95,8 @@ class RwnmrConfig:
         self.max_rwsteps = max_rwsteps
         self.seed = seed
 # Example usage
-uct_config = UctConfig("10", "1", ".png", "1", "1.0", "0", "0")
-cpmg_config = CpmgConfig("False", "3000.0", "image-based", "False", "uniform", "10.0", "2", "False", "0.1", "100000.0", "True", "256", "-4", "2", "512", "0", "0.00", "True", "False", "False", "False", "False","False")
+uct_config = UctConfig("10", "1", ".png", "4", "1.0", "0", "0")
+cpmg_config = CpmgConfig("false", "3000.0", "image-based", "false", "uniform", "10.0", "2", "false", "0.1", "100000.0", "true", "256", "-4", "2", "512", "0", "0.00", "true", "true", "true", "true", "true","true")
 rwnmr_config = RwnmrConfig(
     name="examplename",
     map_time="0.0",
@@ -110,15 +104,15 @@ rwnmr_config = RwnmrConfig(
     map_filter="0.0",
     map_tol="0.01",
     map_iterations="1",
-    save_img_info="False",
-    save_binimg="False",
-    save_walkers="False",
-    openmp_usage="True",
+    save_img_info="false",
+    save_binimg="false",
+    save_walkers="false",
+    openmp_usage="true",
     openmp_threads="4",
-    gpu_usage="True",
-    reduce_in_gpu="True",
+    gpu_usage="true",
+    reduce_in_gpu="true",
     walker_samples="1",
-    walkers="1000",
+    walkers="10000000",
     walkers_placement="random",
     placement_deviation="0.0",
     rho_type="uniform",
@@ -188,7 +182,9 @@ mat = np.array([[
 # print(rwnmr.CPMG(cpmg_config))
 # print(rwnmr.RWNMR(rwnmr_config))
 # print(rwnmr.UCT(uct_config))
-# binarized = binarize(ler_imagem("./img_reader/testsimgs", 2, 0), 255)
+binarized = binarize(ler_imagem("./imgs/AC2/AC_1um_Seg2_Binaria", 956, 0), 255)
+# binarized = binarize(ler_imagem("./imgs/pixelados", 1, 0), 255)
 # print(binarized)
 # rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)
-rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, mat,  mat.shape[0], mat.shape[1], mat.shape[2] )
+# rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, mat,  mat.shape[0], mat.shape[1], mat.shape[2] )
+rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, binarized,  binarized.shape[0], binarized.shape[1], binarized.shape[2] )

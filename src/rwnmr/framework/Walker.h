@@ -1,7 +1,34 @@
 #ifndef WALKER_H_
 #define WALKER_H_
 
-#include "Defs.h"
+#ifndef NMR_DEFS_H
+#define NMR_DEFS_H
+
+// include string stream manipulation functions
+#include <iostream>
+#include <fstream>
+using namespace std;
+#include "../math/RNG/xorshift.h"
+#ifndef DIRECTION_ENUM
+#define DIRECTION_ENUM
+typedef enum Direction
+{
+    None = 0,
+    North = 1,
+    West = 2,
+    South = 3,
+    East = 4,
+    Up = 5,
+    Down = 6
+} direction;
+#endif
+
+
+#define LOG_XIRATE false
+#define WALKER_INITIAL_ENERGY 1.0
+#define WALKER_DEFAULT_RHO 0.0
+
+#endif
 #include "Pos3d.h"
 #include "BitBlock.h"
 

@@ -61,8 +61,11 @@ void NMR_cpmg::build()
 void NMR_cpmg::run()
 {
     (*this).build();
+    cout << "build completed" << endl;
     (*this).run_simulation();
+    cout << "simulation finished." << endl;
     (*this).save();
+    cout << "results saved." << endl;
 }
 
 void NMR_cpmg::buildName(string parent, string sufix)
@@ -77,7 +80,7 @@ void NMR_cpmg::createDirectoryForData()
 {
 	string path = this->model.getDbPath();
     BaseFunctions::createDirectory(path, this->model.getName() + "/" + this->name );
-    this->dir = (path + this->model.getName() + "/" + this->name);
+    this->dir = (path + this->model.getName() + this->name);
 }
 
 
@@ -361,33 +364,38 @@ void NMR_cpmg::normalizeSignal()
 // -- Savings
 void NMR_cpmg::save()
 {
-	double time = omp_get_wtime();
+    cout << "entering save method" << endl;
     cout << "saving results...";
-       
-    if(this->CPMG_config.getSaveWalkers())
+
+    
+    if(CPMG_config.getSaveWalkers())
     {
-        (*this).writeWalkers();
+        cout << "saving walkers" << endl;
+        writeWalkers();
     }
 
-    if(this->CPMG_config.getSaveHistogram())
+    if(CPMG_config.getSaveHistogram())
     {
-        (*this).writeHistogram();
+        cout << "saving histogram" << endl;
+        writeHistogram();
     }    
 
-    if(this->CPMG_config.getSaveHistogramList())
+    if(CPMG_config.getSaveHistogramList())
     {
-        (*this).writeHistogramList();
+        cout << "saving histogram list" << endl;
+        writeHistogramList();
     }
 
     // write cpmg data
-    if(this->CPMG_config.getSaveDecay()) 
-    {
-        (*this).writeT2decay();
-        (*this).writeT2dist();
-    }
+    //inversion moved to the python script
+    // if(CPMG_config.getSaveDecay()) 
+    // {
+    //     cout << "saving cpmg data" << endl;
+    //     writeT2decay();
+    //     (*this).writeT2dist();
+    // }
 
-	time = omp_get_wtime() - time;
-    cout << "Ok. (" << time << " seconds)." << endl; 
+    cout << "Saving complete. " << endl; 
 }
 
 void NMR_cpmg::writeT2decay()

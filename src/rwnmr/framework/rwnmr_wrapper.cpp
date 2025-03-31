@@ -8,6 +8,7 @@
 #include "../configFiles/RwnmrConfig.h"
 #include "../configFiles/UctConfig.h"
 #include "./BitBlock.h"
+#include "./rwnmrApp.h"
 static PyObject* metodo1(PyObject* self, PyObject* args){
 
     PyArrayObject *np_array;
@@ -457,7 +458,6 @@ UctConfig UCT(PyObject* UCT_object){
 
 
 static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
-    printf("Entrou no CPMG_EXECUTE\n");
     PyObject* CPMG_object;
     PyObject* RWNMR_object;
     PyObject* UCT_object;
@@ -472,7 +472,6 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
         Py_DECREF(image_object);
         return NULL;
     }
-    printf("Entrou no CPMG_EXECUTE\n");
     //Image retrieval
     uint8_t* dados = (uint8_t*)PyArray_DATA(image_object);
     std::vector<CustomMat> binaryMap;
@@ -482,37 +481,38 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
         CustomMat data = CustomMat(rows, cols, vec_data);
         binaryMap.push_back(data);
     }
-    printf("Passou a leitura da imagem\n");
     RwnmrConfig rwnmr_config = RWNMR(RWNMR_object);
-    printf("Passou a leitura do RWNMR\n");
     UctConfig uCT_Config = UCT(UCT_object);
-    printf("Passou a leitura do UCT\n");
     CpmgConfig cpmg_config = CPMG(CPMG_object);
-    printf("Passou a leitura do CPMG\n");
     Py_DECREF(CPMG_object);
     Py_DECREF(RWNMR_object);
     Py_DECREF(UCT_object);
     Py_DECREF(image_object);
 
-    std::cout << "Image Data:" << std::endl;
-    for (int d = 0; d < depth; ++d) {
-        CustomMat mat = binaryMap[d];
-        for (int i = 0; i < mat.getRows(); ++i) {
-            for (int j = 0; j < mat.getCols(); ++j) {
-                std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
+    // std::cout << "Image Data:" << std::endl;
+    // for (int d = 0; d < depth; ++d) {
+    //     CustomMat mat = binaryMap[d];
+    //     for (int i = 0; i < mat.getRows(); ++i) {
+    //         for (int j = 0; j < mat.getCols(); ++j) {
+    //             std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // }
 
-    std::cout << "CPMG Config - Apply Bulk: " << cpmg_config.getApplyBulk() << std::endl;
-    std::cout << "RWNMR Config - Name: " << rwnmr_config.getName() << std::endl;
-    std::cout << "UCT Config - First Index: " << uCT_Config.getFirstIdx() << std::endl;
+    // std::cout << "CPMG Config - Apply Bulk: " << cpmg_config.getApplyBulk() << std::endl;
+    // std::cout << "RWNMR Config - Name: " << rwnmr_config.getName() << std::endl;
+    // std::cout << "UCT Config - First Index:" << uCT_Config.getFirstIdx() << std::endl;
 
-    // rwnmrApp app;
+    rwnmrApp app;
+    app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
+
+    app.CPMG(cpmg_config);
+    // printf("Essentials construidos\n");
     // app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
-    return PyUnicode_FromString("CPMG execution method");;
+    
+    return PyUnicode_FromString("CPMG execution method");
 };
 
 static struct PyMethodDef methods[] = {
