@@ -57,7 +57,7 @@ class CustomBuildExt(build_ext):
 
 setup(
     name="rwnmr",
-    version=2.0, 
+    version='2.0.1', 
     download_url="https://github.com/RickSeta/cpp-rwnmr-lib",
     author_email="rickseta@gmail.com",
     ext_modules=[

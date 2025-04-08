@@ -65,7 +65,7 @@ void rwnmrApp::buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, st
 //     }
 // }
 
-void rwnmrApp::CPMG(CpmgConfig cpmg_config)
+NMR_cpmg rwnmrApp::CPMG(CpmgConfig cpmg_config)
 {
     cout << "-- CPMG to be executed:" << endl;
 
@@ -74,6 +74,7 @@ void rwnmrApp::CPMG(CpmgConfig cpmg_config)
     NMR_cpmg cpmg((*this).getModel(), cpmg_config);
     cpmg.run();
     cout << endl << "- cpmg executed succesfully" << endl << endl;
+    return cpmg;
     // -----
 }
 
