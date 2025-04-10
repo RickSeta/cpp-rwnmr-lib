@@ -1,8 +1,7 @@
 import glob
 from pathlib import Path
 import shlex
-from setuptools import setup
-from setuptools import Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 import os
 import subprocess
@@ -47,7 +46,7 @@ class CustomBuildExt(build_ext):
 
     def build_extensions(self):
         built_objects = glob.glob(os.path.join(self.build_temp, "*.o*"))
-        lib_filename = os.path.join(self.build_lib, self.ext_map['rwnmr']._file_name)
+        lib_filename = os.path.join(self.build_lib, self.ext_map['rwnmr.wrapper']._file_name)
         Path(os.path.split(lib_filename)[0]).mkdir(parents=True, exist_ok=True)
         linker_command = rf"nvcc -Xcompiler -fopenmp -shared -o {lib_filename} {' '.join(built_objects)}" + \
             ' '.join([f" -L{library_dir}" for library_dir in self.library_dirs]) 
@@ -60,17 +59,17 @@ setup(
     version='2.0.1', 
     download_url="https://github.com/RickSeta/cpp-rwnmr-lib",
     author_email="rickseta@gmail.com",
+    packages=find_packages(where="src"),
+    package_dir={'': 'src/'},
     ext_modules=[
         Extension(
-            "rwnmr",  # Nome do módulo
+            "rwnmr.wrapper",  # Nome do módulo
             sources= source_files
             ,
             include_dirs=[
                 'src/rwnmr/framework',
                 'src/rwnmr/configFiles',
             ],
-            extra_compile_args=['-std=c++11'], 
-            language="c++",
         )
     ],
     cmdclass={'build_ext': CustomBuildExt},

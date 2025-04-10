@@ -6,5 +6,6 @@
 /rwnmr
 /.venv
 /rwnmr.egg-info
+*.egg-info
 *.whl
 /img_reader

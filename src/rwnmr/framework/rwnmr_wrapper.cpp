@@ -516,7 +516,7 @@ static struct PyModuleDef rwnmr ={
     methods
 };
 
-PyMODINIT_FUNC PyInit_rwnmr(void) {
+PyMODINIT_FUNC PyInit_wrapper(void) {
     import_array();  // Necessary for NumPy initialization
     return PyModule_Create(&rwnmr);
 }
