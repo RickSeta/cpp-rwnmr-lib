@@ -74,6 +74,6 @@ setup(
     ],
     cmdclass={'build_ext': CustomBuildExt},
     install_requires=['numpy', 'pillow','wheel', 'setuptools'],
-    setup_requires=['numpy',],
+    setup_requires=['numpy', 'pillow','wheel', 'setuptools'],
 )
 #se não funcionar faça pip install --upgrade setuptools wheel 
