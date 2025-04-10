@@ -388,12 +388,12 @@ void NMR_cpmg::save()
 
     // write cpmg data
     //inversion moved to the python script
-    // if(CPMG_config.getSaveDecay()) 
-    // {
-    //     cout << "saving cpmg data" << endl;
-    //     writeT2decay();
-    //     (*this).writeT2dist();
-    // }
+    if(CPMG_config.getSaveDecay()) 
+    {
+        cout << "saving cpmg data" << endl;
+        writeT2decay();
+        // writeT2dist();
+    }
 
     cout << "Saving complete. " << endl; 
 }
@@ -413,12 +413,12 @@ void NMR_cpmg::writeT2decay()
     const size_t num_points = this->signalAmps.size();
     const int precision = std::numeric_limits<double>::max_digits10;
 
-    file << "time,signal,noise,noiseless" << endl;
+    file << "time,signal" << endl;
     for (int idx = 0; idx < num_points; idx++)
     {
         file << setprecision(precision) << this->signalTimes[idx] << ",";
-        file << setprecision(precision) << this->signalAmps[idx] + this->noise[idx] << ",";
-        file << setprecision(precision) << this->noise[idx] << ",";
+        // file << setprecision(precision) << this->signalAmps[idx] + this->noise[idx] << ",";
+        // file << setprecision(precision) << this->noise[idx] << ",";
         file << setprecision(precision) << this->signalAmps[idx] << endl;    
     }
     

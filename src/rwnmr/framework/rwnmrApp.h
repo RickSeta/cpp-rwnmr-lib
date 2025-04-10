@@ -57,7 +57,7 @@ public:
     void buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, std::vector<CustomMat>  image);
     void exec();    
 
-    void CPMG(CpmgConfig cpgm_config);
+    NMR_cpmg CPMG(CpmgConfig cpgm_config);
     void PFGSE(uint command_idx);
     void GA(uint command_idx);
     void MultiTau(uint command_idx);

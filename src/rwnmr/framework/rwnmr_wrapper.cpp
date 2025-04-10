@@ -1,7 +1,7 @@
 #include "Python.h"
 
 #include <stdlib.h> 
-
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 #include <iostream>
 #include "../configFiles/CpmgConfig.h"
@@ -28,13 +28,46 @@ static PyObject* metodo1(PyObject* self, PyObject* args){
     }
 };
 
-static PyObject* metodo2(PyObject* self, PyObject* args){
+static PyObject* create_and_return_array(PyObject* self, PyObject* args) {
+    std::vector<double> signalTimes = {0.1, 0.2, 0.3, 0.4};
+    std::vector<double> signalAmps = {1.0, 0.8, 0.6, 0.4};
+
+    // Define the size of the arrays
+    npy_intp size = signalTimes.size();
+
+    // Create a new NumPy array for signalTimes
+    PyObject* np_signalTimes = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
+    if (!np_signalTimes) {
+        return NULL;  // Return NULL if array creation fails
+    }
+
+    // Copy data from signalTimes to the NumPy array
+    double* signalTimes_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalTimes));
+    std::copy(signalTimes.begin(), signalTimes.end(), signalTimes_data);
+
+    // Create a new NumPy array for signalAmps
+    PyObject* np_signalAmps = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
+    if (!np_signalAmps) {
+        Py_DECREF(np_signalTimes);  // Clean up if second array creation fails
+        return NULL;
+    }
+
+    // Copy data from signalAmps to the NumPy array
+    double* signalAmps_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalAmps));
+    std::copy(signalAmps.begin(), signalAmps.end(), signalAmps_data);
+
+    // Return both arrays as a tuple
+    return PyTuple_Pack(2, np_signalTimes, np_signalAmps);
+}
+
+static PyObject* helloworld(PyObject* self, PyObject* args){
     PyObject* texto;
     if(!PyArg_ParseTuple(args, "U", &texto)){
         Py_DecRef(texto);
         return NULL;
     }
     PyObject* ret = PyUnicode_FromFormat("Hello from %U!", texto);
+    Py_DecRef(texto);
     return ret;
 };
 CpmgConfig CPMG(PyObject* CPMG_object){
@@ -122,29 +155,6 @@ CpmgConfig CPMG(PyObject* CPMG_object){
         PyUnicode_AsUTF8(saveHistogramList)
     );
 
-    Py_DECREF(applyBulk);
-    Py_DECREF(obsTime);
-    Py_DECREF(method);
-    Py_DECREF(timeVerbose);
-    Py_DECREF(residualField);
-    Py_DECREF(gradientValue);
-    Py_DECREF(gradientDirection);
-    Py_DECREF(interpolateField);
-    Py_DECREF(minT2);
-    Py_DECREF(maxT2);
-    Py_DECREF(useT2Logspace);
-    Py_DECREF(numT2Bins);
-    Py_DECREF(minLambda);
-    Py_DECREF(maxLambda);
-    Py_DECREF(numLambdas);
-    Py_DECREF(pruneNum);
-    Py_DECREF(noiseAmp);
-    Py_DECREF(saveMode);
-    Py_DECREF(saveT2);
-    Py_DECREF(saveWalkers);
-    Py_DECREF(saveDecay);
-    Py_DECREF(saveHistogram);
-    Py_DECREF(saveHistogramList);
     return cpmg_config;
     
 }
@@ -254,39 +264,7 @@ if (nameContent == NULL || walkersContent == NULL || walkersPlacementContent == 
         if (echoesPerKernelContent == NULL) printf("echoesPerKernelContent is NULL\n");
         if (reduceInGPUContent == NULL) printf("reduceInGPUContent is NULL\n");
         if (maxRWStepsContent == NULL) printf("maxRWStepsContent is NULL\n");
-        Py_XDECREF(nameContent);
-        Py_XDECREF(walkersContent);
-        Py_XDECREF(walkerSamplesContent);
-        Py_XDECREF(walkersPlacementContent);
-        Py_XDECREF(placementDeviationContent);
-        Py_XDECREF(rhoTypeContent);
-        Py_XDECREF(rhoContent);
-        Py_XDECREF(stepsPerEchoContent);
-        Py_XDECREF(giromagneticRatioContent);
-        Py_XDECREF(giromagneticUnitContent);
-        Py_XDECREF(d0Content);
-        Py_XDECREF(bulkTimeContent);
-        Py_XDECREF(seedContent);
-        Py_XDECREF(bcContent);
-        Py_XDECREF(mapStepsContent);
-        Py_XDECREF(saveImgInfoContent);
-        Py_XDECREF(saveBinImgContent);
-        Py_XDECREF(saveWalkersContent);
-        Py_XDECREF(histogramsContent);
-        Py_XDECREF(histogramSizeContent);
-        Py_XDECREF(histogramScaleContent);
-        Py_XDECREF(mapTimeContent);
-        Py_XDECREF(mapFilterContent);
-        Py_XDECREF(mapTolContent);
-        Py_XDECREF(mapIterationsContent);
-        Py_XDECREF(openMPUsageContent);
-        Py_XDECREF(openMPThreadsContent);
-        Py_XDECREF(gpuUsageContent);
-        Py_XDECREF(blocksContent);
-        Py_XDECREF(threadsPerBlockContent);
-        Py_XDECREF(echoesPerKernelContent);
-        Py_XDECREF(reduceInGPUContent);
-        Py_XDECREF(maxRWStepsContent);
+        
         return RwnmrConfig(); 
     }
     rwnmr_config.readName(PyUnicode_AsUTF8(nameContent));
@@ -445,14 +423,7 @@ UctConfig UCT(PyObject* UCT_object){
     uct_config.readVoxelDivision(PyUnicode_AsUTF8(voxelDivisionContent));
     uct_config.readPoreColor(PyUnicode_AsUTF8(poreColorContent));
     uct_config.readFirstIdx(PyUnicode_AsUTF8(firstIdxContent));
-    Py_DECREF(firstIdxContent);
-    Py_DECREF(digitsContent);
-    Py_DECREF(extensionContent);
-    Py_DECREF(slicesContent);
-    Py_DECREF(resolutionContent);
-    Py_DECREF(voxelDivisionContent);
-    Py_DECREF(poreColorContent);
-    Py_DECREF(UCT_object);
+
     return uct_config;
 };
 
@@ -466,10 +437,6 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     int cols;
     int depth;
     if(!PyArg_ParseTuple(args, "OOOOiii", &CPMG_object, &RWNMR_object, &UCT_object, &image_object, &depth, &rows, &cols)){
-        Py_DECREF(CPMG_object);
-        Py_DECREF(RWNMR_object);
-        Py_DECREF(UCT_object);
-        Py_DECREF(image_object);
         return NULL;
     }
     //Image retrieval
@@ -481,48 +448,61 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
         CustomMat data = CustomMat(rows, cols, vec_data);
         binaryMap.push_back(data);
     }
-    RwnmrConfig rwnmr_config = RWNMR(RWNMR_object);
+    RwnmrConfig rwnmr_config =  RWNMR(RWNMR_object);
     UctConfig uCT_Config = UCT(UCT_object);
     CpmgConfig cpmg_config = CPMG(CPMG_object);
-    Py_DECREF(CPMG_object);
-    Py_DECREF(RWNMR_object);
-    Py_DECREF(UCT_object);
-    Py_DECREF(image_object);
-
-    // std::cout << "Image Data:" << std::endl;
-    // for (int d = 0; d < depth; ++d) {
-    //     CustomMat mat = binaryMap[d];
-    //     for (int i = 0; i < mat.getRows(); ++i) {
-    //         for (int j = 0; j < mat.getCols(); ++j) {
-    //             std::cout << static_cast<int>(mat.getData()[i * mat.getCols() + j]) << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    // std::cout << "CPMG Config - Apply Bulk: " << cpmg_config.getApplyBulk() << std::endl;
-    // std::cout << "RWNMR Config - Name: " << rwnmr_config.getName() << std::endl;
-    // std::cout << "UCT Config - First Index:" << uCT_Config.getFirstIdx() << std::endl;
-
     rwnmrApp app;
+
+    //build the simulation
     app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
 
-    app.CPMG(cpmg_config);
-    // printf("Essentials construidos\n");
-    // app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
-    
-    return PyUnicode_FromString("CPMG execution method");
+    //run the simulation and return the results
+    NMR_cpmg cpmg = app.CPMG(cpmg_config);
+
+    // now we get the results, copy them to an numpy array to return them
+    std::vector<double> signalAmps(cpmg.getSignalAmps().begin(), cpmg.getSignalAmps().end());
+    std::vector<double> signalTimes(cpmg.getSignalTimes().begin(), cpmg.getSignalTimes().end());
+
+    // std::vector<double> signalTimes = {0.1, 0.2, 0.3, 0.4};
+    // std::vector<double> signalAmps = {1.0, 0.8, 0.6, 0.4};
+
+    // Define the size of the arrays
+    npy_intp size = signalTimes.size();
+
+    // Create a new NumPy array for signalTimes
+    PyObject* np_signalTimes = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
+    if (!np_signalTimes) {
+        return NULL;  // Return NULL if array creation fails
+    }
+
+    // Copy data from signalTimes to the NumPy array
+    double* signalTimes_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalTimes));
+    std::copy(signalTimes.begin(), signalTimes.end(), signalTimes_data);
+
+    // Create a new NumPy array for signalAmps
+    PyObject* np_signalAmps = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
+    if (!np_signalAmps) {
+        Py_DECREF(np_signalTimes);  // Clean up if second array creation fails
+        return NULL;
+    }
+
+    // Copy data from signalAmps to the NumPy array
+    double* signalAmps_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalAmps));
+    std::copy(signalAmps.begin(), signalAmps.end(), signalAmps_data);
+
+    PyObject* dict = PyDict_New();
+    PyDict_SetItemString(dict, "times", np_signalTimes);
+    PyDict_SetItemString(dict, "amps", np_signalAmps);
+    return dict;
 };
 
 static struct PyMethodDef methods[] = {
     {"metodo1", (PyCFunction) metodo1,METH_VARARGS, "Testando metodo simples"},
-    {"metodo2", (PyCFunction) metodo2,METH_VARARGS, "Testando print simples"},
+    {"metodo2", (PyCFunction) helloworld,METH_VARARGS, "Testando print simples"},
     // {"CPMG", (PyCFunction) CPMG,METH_VARARGS, "Testando CPMG"},
+    {"create_and_return_array", (PyCFunction)create_and_return_array, METH_VARARGS, "Create and return a NumPy array"},
     {"recebe_objeto_classe", (PyCFunction) recebe_objeto_classe, METH_VARARGS, "Recebe um objeto Python e uma classe Python"},
-    // {"RWNMR", (PyCFunction) RWNMR,METH_VARARGS, "Testando RWNMR"},
     {"BitBlockMethod", (PyCFunction) BitBlockMethod,METH_VARARGS, "Testando BitBlock"},
-    // {"UCT", (PyCFunction) UCT,METH_VARARGS, "Testando UCT"},
     {"CPMG_EXECUTE", (PyCFunction) CPMG_EXECUTE,METH_VARARGS, "Testando CPMG_EXECUTE"},
     
     {NULL, NULL}
@@ -536,7 +516,7 @@ static struct PyModuleDef rwnmr ={
     methods
 };
 
-PyMODINIT_FUNC PyInit_rwnmr(void) {
+PyMODINIT_FUNC PyInit_wrapper(void) {
     import_array();  // Necessary for NumPy initialization
     return PyModule_Create(&rwnmr);
 }
