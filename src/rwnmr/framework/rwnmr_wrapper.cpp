@@ -427,7 +427,14 @@ UctConfig UCT(PyObject* UCT_object){
     return uct_config;
 };
 
-
+PyObject* vector_to_pylist(const std::vector<double>& vec) {
+    PyObject* list = PyList_New(vec.size());
+    for (size_t i = 0; i < vec.size(); ++i) {
+        PyList_SetItem(list, i, PyFloat_FromDouble(vec[i]));
+        // Note: PyList_SetItem steals reference, so no need to DECREF
+    }
+    return list;
+}
 static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     PyObject* CPMG_object;
     PyObject* RWNMR_object;
@@ -458,42 +465,18 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
 
     //run the simulation and return the results
     NMR_cpmg cpmg = app.CPMG(cpmg_config);
+    PyObject* amps = vector_to_pylist(cpmg.getSignalAmps());
+    PyObject* times = vector_to_pylist(cpmg.getSignalTimes());
+    PyObject* result = PyTuple_Pack(2, amps, times);
 
     // now we get the results, copy them to an numpy array to return them
-    std::vector<double> signalAmps(cpmg.getSignalAmps().begin(), cpmg.getSignalAmps().end());
-    std::vector<double> signalTimes(cpmg.getSignalTimes().begin(), cpmg.getSignalTimes().end());
+    // std::vector<double> signalAmps(cpmg.getSignalAmps().begin(), cpmg.getSignalAmps().end());
+    // std::vector<double> signalTimes(cpmg.getSignalTimes().begin(), cpmg.getSignalTimes().end());
 
     // std::vector<double> signalTimes = {0.1, 0.2, 0.3, 0.4};
     // std::vector<double> signalAmps = {1.0, 0.8, 0.6, 0.4};
 
-    // Define the size of the arrays
-    npy_intp size = signalTimes.size();
-
-    // Create a new NumPy array for signalTimes
-    PyObject* np_signalTimes = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
-    if (!np_signalTimes) {
-        return NULL;  // Return NULL if array creation fails
-    }
-
-    // Copy data from signalTimes to the NumPy array
-    double* signalTimes_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalTimes));
-    std::copy(signalTimes.begin(), signalTimes.end(), signalTimes_data);
-
-    // Create a new NumPy array for signalAmps
-    PyObject* np_signalAmps = PyArray_SimpleNew(1, &size, NPY_DOUBLE);
-    if (!np_signalAmps) {
-        Py_DECREF(np_signalTimes);  // Clean up if second array creation fails
-        return NULL;
-    }
-
-    // Copy data from signalAmps to the NumPy array
-    double* signalAmps_data = static_cast<double*>(PyArray_DATA((PyArrayObject*)np_signalAmps));
-    std::copy(signalAmps.begin(), signalAmps.end(), signalAmps_data);
-
-    PyObject* dict = PyDict_New();
-    PyDict_SetItemString(dict, "times", np_signalTimes);
-    PyDict_SetItemString(dict, "amps", np_signalAmps);
-    return dict;
+    return result;
 };
 
 static struct PyMethodDef methods[] = {
