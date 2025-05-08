@@ -25,7 +25,9 @@ void BitBlock::createBlockMap(vector<CustomMat> &_binaryMap, uchar poreColor)
     }
     else
     {
+        cout << "3D block" << endl;
         setBlockMapDimensions_3D(_binaryMap);
+        cout << "3D block dimensions set" << endl;
         createBitBlocksArray_3D(_binaryMap, poreColor);
     }
 }
@@ -164,7 +166,7 @@ void BitBlock::setBlockMapDimensions_3D(vector<CustomMat> &_binaryMap)
 void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar poreColor)
 {
     uint64_t newBlock;
-
+    cout << "Creating 3D bit block array" << endl;
     // Create progress bar object
     ProgressBar pBar((double) ((*this).getBlockDepth()));
 

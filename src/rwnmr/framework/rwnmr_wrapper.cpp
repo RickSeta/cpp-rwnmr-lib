@@ -467,14 +467,7 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     NMR_cpmg cpmg = app.CPMG(cpmg_config);
     PyObject* amps = vector_to_pylist(cpmg.getSignalAmps());
     PyObject* times = vector_to_pylist(cpmg.getSignalTimes());
-    PyObject* result = PyTuple_Pack(2, amps, times);
-
-    // now we get the results, copy them to an numpy array to return them
-    // std::vector<double> signalAmps(cpmg.getSignalAmps().begin(), cpmg.getSignalAmps().end());
-    // std::vector<double> signalTimes(cpmg.getSignalTimes().begin(), cpmg.getSignalTimes().end());
-
-    // std::vector<double> signalTimes = {0.1, 0.2, 0.3, 0.4};
-    // std::vector<double> signalAmps = {1.0, 0.8, 0.6, 0.4};
+    PyObject* result = PyTuple_Pack(2, times, amps);
 
     return result;
 };
