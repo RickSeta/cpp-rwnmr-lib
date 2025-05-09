@@ -18,6 +18,7 @@ BitBlock::BitBlock(const BitBlock &_bitBlock)
 
 void BitBlock::createBlockMap(vector<CustomMat> &_binaryMap, uchar poreColor)
 {
+    cout << "createBlockMap" << endl;
     if (_binaryMap.size() == 1)
     {
         setBlockMapDimensions_2D(_binaryMap[0]);
@@ -167,8 +168,15 @@ void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar pore
 {
     uint64_t newBlock;
     cout << "Creating 3D bit block array" << endl;
-    // Create progress bar object
-    ProgressBar pBar((double) ((*this).getBlockDepth()));
+    
+    cout << "Block depth: " << (*this).getBlockDepth() << endl;
+    cout << "Block rows: " << (*this).getBlockRows() << endl;
+    cout << "Block columns: " << (*this).getBlockColumns() << endl;
+
+    // Calculate total number of blocks for progress bar
+    uint totalBlocks = (*this).getBlockDepth() * (*this).getBlockRows() * (*this).getBlockColumns();
+    ProgressBar pBar((double)totalBlocks);
+    uint processedBlocks = 0;
 
     for (int block_z = 0; block_z < (*this).getBlockDepth(); block_z++)
     {
@@ -208,12 +216,13 @@ void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar pore
 
                 // assign new block to blocks array
                 (*this).setBlock(newBlock, IDX2C_3D(block_x, block_y, block_z, (*this).getBlockColumns(), (*this).getBlockRows()));
+                
+                // Update progress after each block is processed
+                processedBlocks++;
+                pBar.update(1);
+                pBar.print();
             }
         }
-
-        // Update progress bar
-        pBar.update(1);
-        pBar.print();
     }
 }
 

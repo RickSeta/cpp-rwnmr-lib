@@ -1,104 +1,51 @@
+
 import rwnmr
 import numpy as np
 from PIL import Image
 from os import listdir
+import matplotlib.pyplot as plt
+from rwnmr.config_classes import *
 
-def ler_imagem(img_dir,num_slices, slice_inicial=0):
-    lista_slices = listdir(img_dir)
-    img_array =[]
-    for slice in range(slice_inicial, num_slices):
-        img= np.array(Image.open(img_dir +"/" + lista_slices[slice]).convert("L"),dtype=np.uint8)
+import pickle
 
-        img_array.append(img)
-    
-    return img_array
 
-def binarize(img_array, cor_poro):
-    print("Binarizing images....")
-    img_array = np.array(img_array)
-    for pixel in img_array:
-        pixel[pixel != cor_poro] = 1
-        pixel[pixel == cor_poro] = 0
-    print("Images binarized")
-    return img_array
+uct_config = UctConfig(
+    first_idx="0",
+    digits="1",
+    extension="0",
+    slices="956",
+    resolution="1.0",
+    voxel_division="0",
+    pore_color="0"
+)
+cpmg_config = CpmgConfig(
+    apply_bulk="false",
+    obs_time="1000.0",
+    method="image-based",
+    time_verbose="false",
+    residual_field="uniform",
+    gradient_value="10.0",
+    gradient_direction="2",
+    interpolate_field="false",
+    min_t2="0.1",
+    max_t2="100000.0",
+    use_t2_logspace="true",
+    num_t2_bins="256",
+    min_lambda="-4",
+    max_lambda="2",
+    num_lambdas="512",
+    prune_num="0",
+    noise_amp="0.00",
+    save_mode="true",
+    save_t2="true",
+    save_walkers="true",
+    save_decay="true",
+    save_histogram="true",
+    save_histogram_list="true"
+)
 
-class UctConfig:
-    def __init__(self, first_idx, digits, extension, slices, resolution, voxel_division, pore_color):
-
-        self.first_idx = first_idx
-        self.digits = digits
-        self.extension = extension
-        self.slices = slices
-        self.resolution = resolution
-        self.voxel_division = voxel_division
-        self.pore_color = pore_color 
-
-class CpmgConfig:
-    def __init__(self, apply_bulk, obs_time, method, time_verbose, residual_field, gradient_value, gradient_direction, interpolate_field, min_t2, max_t2, use_t2_logspace, num_t2_bins, min_lambda, max_lambda, num_lambdas, prune_num, noise_amp, save_mode, save_t2, save_walkers, save_decay, save_histogram, save_histogram_list):
-        self.apply_bulk = apply_bulk
-        self.obs_time = obs_time
-        self.method = method
-        self.time_verbose = time_verbose
-        self.residual_field = residual_field
-        self.gradient_value = gradient_value
-        self.gradient_direction = gradient_direction
-        self.interpolate_field = interpolate_field
-        self.min_t2 = min_t2
-        self.max_t2 = max_t2
-        self.use_t2_logspace = use_t2_logspace
-        self.num_t2_bins = num_t2_bins
-        self.min_lambda = min_lambda
-        self.max_lambda = max_lambda
-        self.num_lambdas = num_lambdas
-        self.prune_num = prune_num
-        self.noise_amp = noise_amp
-        self.save_mode = save_mode
-        self.save_t2 = save_t2
-        self.save_walkers = save_walkers
-        self.save_decay = save_decay
-        self.save_histogram = save_histogram
-        self.save_histogram_list = save_histogram_list
-
-class RwnmrConfig:
-    def __init__(self, name, map_time, map_steps, map_filter, map_tol, map_iterations, save_img_info, save_binimg, save_walkers, openmp_usage, openmp_threads, gpu_usage, reduce_in_gpu, walker_samples, walkers, walkers_placement, placement_deviation, rho_type, rho, giromagnetic_ratio, giromagnetic_unit, d0, bulk_time, steps_per_echo, bc, histograms, histogram_size, histogram_scale, blocks, threads_per_block, echoes_per_kernel, max_rwsteps ,seed):
-        self.name = name
-        self.map_time = map_time
-        self.map_steps = map_steps
-        self.map_filter = map_filter
-        self.map_tol = map_tol
-        self.map_iterations = map_iterations
-        self.save_img_info = save_img_info
-        self.save_binimg = save_binimg
-        self.save_walkers = save_walkers
-        self.openmp_usage = openmp_usage
-        self.openmp_threads = openmp_threads
-        self.gpu_usage = gpu_usage
-        self.reduce_in_gpu = reduce_in_gpu
-        self.walker_samples = walker_samples
-        self.walkers = walkers
-        self.walkers_placement = walkers_placement
-        self.placement_deviation = placement_deviation
-        self.rho_type = rho_type
-        self.rho = rho
-        self.giromagnetic_ratio = giromagnetic_ratio
-        self.giromagnetic_unit = giromagnetic_unit
-        self.d0 = d0
-        self.bulk_time = bulk_time
-        self.steps_per_echo = steps_per_echo
-        self.bc = bc
-        self.histograms = histograms
-        self.histogram_size = histogram_size
-        self.histogram_scale = histogram_scale
-        self.blocks = blocks
-        self.threads_per_block = threads_per_block
-        self.echoes_per_kernel = echoes_per_kernel
-        self.max_rwsteps = max_rwsteps
-        self.seed = seed
-# Example usage
-uct_config = UctConfig("10", "1", ".png", "4", "1.0", "0", "0")
-cpmg_config = CpmgConfig("false", "3000.0", "image-based", "false", "uniform", "10.0", "2", "false", "0.1", "100000.0", "true", "256", "-4", "2", "512", "0", "0.00", "true", "true", "true", "true", "true","true")
-rwnmr_config = RwnmrConfig(
-    name="examplename",
+rwnmr_config = rwnmr.RwnmrConfig(
+    name="acbez",
     map_time="0.0",
     map_steps="0",
     map_filter="0.0",
@@ -112,15 +59,15 @@ rwnmr_config = RwnmrConfig(
     gpu_usage="true",
     reduce_in_gpu="true",
     walker_samples="1",
-    walkers="10000000",
+    walkers="655360",
     walkers_placement="random",
     placement_deviation="0.0",
     rho_type="uniform",
-    rho="{0.0}",
+    rho="{23.3}",
     giromagnetic_ratio="42.576",
     giromagnetic_unit="mhertz",
-    d0="2.5",
-    bulk_time="2800.0",
+    d0="2.3",
+    bulk_time="2600.0",
     steps_per_echo="4",
     bc="mirror",
     histograms="1",
@@ -134,8 +81,6 @@ rwnmr_config = RwnmrConfig(
     
 )
 
-# print(cpmg_config.path_to_field)
-# print(type(cpmg_config.path_to_field))
 mat = np.array([[
                     [0, 0, 0, 0,   0, 1, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
@@ -177,14 +122,46 @@ mat = np.array([[
                     [0, 0, 0, 0,   0, 0, 0, 0],
                     [0, 0, 0, 0,   0, 0, 0, 0],
                 ],], dtype=np.uint8) 
+print(type(mat))
 
-# rwnmr.BitBlockMethod(mat, mat.shape[0], mat.shape[1], mat.shape[2],)
-# print(rwnmr.CPMG(cpmg_config))
-# print(rwnmr.RWNMR(rwnmr_config))
-# print(rwnmr.UCT(uct_config))
-binarized = binarize(ler_imagem("./imgs/AC2/AC_1um_Seg2_Binaria", 956, 0), 255)
-# binarized = binarize(ler_imagem("./imgs/pixelados", 1, 0), 255)
-# print(binarized)
-# rwnmr.BitBlockMethod(binarized, binarized.shape[0], binarized.shape[1], binarized.shape[2],)
-# rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, mat,  mat.shape[0], mat.shape[1], mat.shape[2] )
-rwnmr.CPMG_EXECUTE(cpmg_config, rwnmr_config, uct_config, binarized,  binarized.shape[0], binarized.shape[1], binarized.shape[2] )
+# loadcsv = np.loadtxt("FEM_T2_AC.csv", delimiter=",")
+x,y =(rwnmr.sim_methods.cpmg_simulation(cpmg_config, uct_config, rwnmr_config, "./imgs/AC_bez"))
+# x,y =(rwnmr.sim_methods.cpmg_simulation(cpmg_config, uct_config, rwnmr_config, "./imgs/sphere100"))
+
+pickle.dump(x, open("resultX", "wb"))
+pickle.dump(y, open("resultY", "wb"))
+
+# x = pickle.load(open("resultX", "rb"))
+# y = pickle.load(open("resultY", "rb"))
+
+
+print("\n\n\n\nimg:" + rwnmr_config.name)
+# print("img:" + uct_config.img_array.shape)
+plt.plot(x, y)
+import matplotlib.pyplot as plt
+
+
+# plt.plot(y,(-y/0.267))
+# plt.plot(y,np.log(x))
+
+plt.title("CPMG Simulation")
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
+plt.grid(True)
+plt.show()
+# plt.plot(y, (x))
+# x_csv = loadcsv[:,0]
+# y_csv = loadcsv[:,1]
+# plt.plot(x_csv*1000, y_csv)
+
+
+from nmrinv_main import simple_nmr_t2_inversion
+
+t2 ,ft2, c = simple_nmr_t2_inversion(x, y, 0.001)
+plt.semilogx(t2, ft2)
+
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
+plt.show()
+
+
