@@ -11,7 +11,7 @@ rwnmrApp::rwnmrApp(ArgsParser _args, string _root) : projectRoot(_root), args(_a
     (*this).setConfigRoot((*this).getProjectRoot() + CONFIG_ROOT); 
 }
 
-void rwnmrApp::buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, uint64_t* blockMap, int imgRows,int imgCols, int imgDepth)
+void rwnmrApp::buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, uint64_t* blockMap, int imgRows,int imgCols, int imgDepth, int count)
 {
     cout << "--- Building RWNMR essentials" << endl;
 
@@ -19,6 +19,7 @@ void rwnmrApp::buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, ui
     // -- Create NMR_Simulation object
     // this->model = new Model(rwNMR_Config, uCT_Config, (*this).getProjectRoot());
     (*this).setModel(new Model(rwNMR_Config, uCT_Config, blockMap));
+    (*this).getModel().setNumberOfPores(count);
     // Read digital rock image
     cout << "-- Loading uCT-image" << endl;
     (*this).getModel().countPores(imgRows, imgCols, imgDepth);

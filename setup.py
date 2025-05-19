@@ -18,7 +18,7 @@ class CustomBuildExt(build_ext):
             source = shlex.quote(source)
             build_temp = shlex.quote(os.path.abspath(self.build_temp))
             if source.endswith(".cu"):
-                compile_command = f"nvcc -allow-unsupported-compiler -O3 -DTESTING_STENCIL -lcudart -lcuda -Xcompiler -fPIC,-fopenmp -c {source} -odir {build_temp}"
+                compile_command = f"nvcc -g -allow-unsupported-compiler -O3 -DTESTING_STENCIL -lcudart -lcuda -Xcompiler -fPIC,-fopenmp -c {source} -odir {build_temp}"
             elif source.endswith(".cpp"):
                 if 'wrapper' not in source:
                     compile_command = f"nvcc -O3 -DTESTING_STENCIL -lcudart -lcuda  -Xcompiler -fPIC,-fopenmp -c \"{source}\" -odir {build_temp}"

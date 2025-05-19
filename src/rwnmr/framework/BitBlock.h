@@ -140,6 +140,9 @@ public:
         int block_x = _position_x >> 2;
         int block_y = _position_y >> 2;
         int block_z = _position_z >> 2;
+
+
+
         int blockIndex = block_x + block_y * this->blockColumns + (block_z * (this->blockColumns * this->blockRows));
 
         return blockIndex;
@@ -157,9 +160,9 @@ public:
         return bitIndex;
     }
 
-    inline bool checkIfBitIsWall(int _blockIndex, int _bitIndex)
+    inline bool checkIfBitIsWall(uint64_t _block, int _bitIndex)
     {
-        return ((this->blocks[_blockIndex] >> _bitIndex) & 1ull);
+        return ((_block >> _bitIndex) & 1ull);
     }
 };
 

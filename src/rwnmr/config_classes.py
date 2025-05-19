@@ -14,19 +14,22 @@ class UctConfig:
         self.img_array = np.array([])
     def binarize(self, path, num_slices,slice_inicial, cor_poro):
         lista_slices = listdir(path)
-        img_array =[]
+        img_array = np.array([], dtype=np.uint8)
         print("Binarizing images....")
-        for slice in range(int(slice_inicial), int(num_slices)):
-            img= np.array(Image.open(path +"/" + lista_slices[slice]).convert("L"),dtype=np.uint8)
 
-            img_array.append(img)
-        img_array = np.array(img_array)
-        for img in img_array:
-            img[img != cor_poro] = 1
-            img[img == cor_poro] = 0
+        img= Image.open(path +"/" + lista_slices[0]).convert("L")
+        cols = img.size[0]
+        rows = img.size[1]
+        for slice in range(int(slice_inicial), int(num_slices)):
+            img= Image.open(path +"/" + lista_slices[slice]).convert("L")
+            img_array = np.append(img_array, np.array(img, dtype=np.uint8))
+        print("Images loaded")
+        img_array[img_array != cor_poro] = 1
+        img_array[img_array == cor_poro] = 0
         print("Images binarized")
         self.img_array = img_array
-        return img_array
+        return img_array, rows, cols
+
 
 class CpmgConfig:
     def __init__(self, apply_bulk, obs_time, method, time_verbose, residual_field, gradient_value, gradient_direction, interpolate_field, min_t2, max_t2, use_t2_logspace, num_t2_bins, min_lambda, max_lambda, num_lambdas, prune_num, noise_amp, save_mode, save_t2, save_walkers, save_decay, save_histogram, save_histogram_list):

@@ -396,58 +396,10 @@ void Model::createBinaryMap(CustomMat _rockImage, uint slice)
 
 void Model::countPoresInBitBlock()
 {
-    double time = omp_get_wtime(); 
-    std::cout << this->bitBlock->getImageDepth() << this->bitBlock->getImageColumns() ;
-    std::cout << "- counting pore voxels in rock image:" << std::endl;
-
-    // consider 2 or 3 dimensions
-    bool dim3 = false; 
-    if(this->bitBlock->getImageDepth() > 1) 
-        dim3 = true;
-
-    // Create progress bar object
-    ProgressBar pBar((double) (this->bitBlock->getImageDepth()));
-
-    // first, count all pores in image
-    this->numberOfPores = 0;
-    for(uint z = 0; z < this->bitBlock->getImageDepth(); z++)
-    {
-        for(uint y = 0; y < this->bitBlock->getImageRows(); y++)
-        {
-            for(uint x = 0; x < this->bitBlock->getImageColumns(); x++)
-            {
-                int block, bit;
-                if(dim3 == true)
-                {
-                    block = this->bitBlock->findBlock(x, y, z);
-                    bit = this->bitBlock->findBitInBlock(x, y, z);
-                } else
-                {
-                    block = this->bitBlock->findBlock(x, y);
-                    bit = this->bitBlock->findBitInBlock(x, y);                    
-                }
-
-                // now check if bit is pore or wall
-               
-                if (!this->bitBlock->checkIfBitIsWall(block, bit))
-                {
-                    this->numberOfPores++;
-                }
-
-            }
-        } 
-
-        // Update progress bar
-        pBar.update(1);
-        pBar.print();      
-    }
-
+    
     (*this).updatePorosity();
-
-    time = omp_get_wtime() - time;
-    cout << " in " << time << " seconds." << endl; 
-    cout << this->numberOfPores << " pore voxel(s) identified. " ;
-    cout << "porosity: " << this->porosity << endl;
+    std::cout << this->numberOfPores << " pore voxel(s) identified. ";
+    std::cout << "porosity: " << this->porosity << std::endl;
 }
 
 void Model::countPoresInCubicSpace(Pos3d _vertex1, Pos3d _vertex2)

@@ -448,10 +448,10 @@ uint64_t array[8 * 8 * 8] = {0};
 
 
 
-void blockMap(uint8_t* binmap, uint64_t* blockMap, uint32_t depth, uint32_t rows, uint32_t cols,  uint32_t bDepth, uint32_t bRow, uint32_t bCols){
+uint32_t blockMap(uint8_t* binmap, uint64_t* blockMap, uint32_t depth, uint32_t rows, uint32_t cols,  uint32_t bDepth, uint32_t bRow, uint32_t bCols){
     printf("entrouuu Block Map:\n");
     int totalBlocks = bDepth * bRow * bCols; 
-
+    int count = 0;
     printf("totalBlocks: %d\n", totalBlocks);
     for(int blockId = 0; blockId < totalBlocks; blockId++){
         // printf("Block ID: %d\n", blockId);
@@ -459,8 +459,6 @@ void blockMap(uint8_t* binmap, uint64_t* blockMap, uint32_t depth, uint32_t rows
         int blockMapz = blockId / (bCols*bRow);
         int blockMapy = (blockId / bCols) % bRow;
         int blockMapx = blockId % bCols;
-
-
         for(int z = 0; z < 4; z++){
             for(int y = 0; y < 4; y++){
                 for(int x = 0; x < 4; x++){
@@ -472,15 +470,15 @@ void blockMap(uint8_t* binmap, uint64_t* blockMap, uint32_t depth, uint32_t rows
 
                     int color = binmap[img_id];
                     // printf("Block ID: %d, Color: %d, img_id: %d\n", blockId, color, img_id);
-
                     blockMap[blockId] = (blockMap[blockId] << 1) + color;
-
+                    if (color == 0) count++;
 
                 }
             }
         }
             
     }
+    return count;
 
 }
 
@@ -488,31 +486,31 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     PyObject* CPMG_object;
     PyObject* RWNMR_object;
     PyObject* UCT_object;
-    PyArrayObject* image_object;
+    PyObject* image_input_obj;
     int rows;
     int cols;
     int depth;
-    if(!PyArg_ParseTuple(args, "OOOOiii", &CPMG_object, &RWNMR_object, &UCT_object, &image_object, &depth, &rows, &cols)){
+    if(!PyArg_ParseTuple(args, "OOOOiii", &CPMG_object, &RWNMR_object, &UCT_object, &image_input_obj, &depth, &rows, &cols)){
         return NULL;
     }
     //Image retrieval
-    uint8_t* dados = (uint8_t*)PyArray_DATA(image_object);
-    std::vector<CustomMat> image;
-    for (int d = 0; d < depth; ++d) {
-        uint8_t* slice_data = dados + (d * rows * cols);
-        std::vector<uint8_t> vec_data(slice_data, slice_data + (rows * cols));
-        CustomMat data = CustomMat(rows, cols, vec_data);
-        image.push_back(data);
+    PyArrayObject* image_array = (PyArrayObject*) PyArray_FROM_OTF(image_input_obj, NPY_UINT8, NPY_ARRAY_IN_ARRAY);
+    if (image_array == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Failed to convert image to a NumPy uint8 array.");
+        return NULL;
     }
 
-
+    uint8_t* image_data = (uint8_t*)PyArray_DATA(image_array);
+    
+    for (int i = 0; i < 9; ++i) {
+        printf("%i ", image_data[i]);
+    }
     uint32_t bDepth = depth / 4;
     uint32_t bRow = rows / 4;
     uint32_t bCols = cols / 4;
     cout << "bDepth: " << bDepth << " bRow: " << bRow << " bCols: " << bCols << endl;
     uint64_t* blockMapArray = (uint64_t*)malloc(bDepth * bRow * bCols * sizeof(uint64_t));
-    blockMap(dados,blockMapArray, depth, rows, cols, bDepth, bRow, bCols);
-    
+    uint32_t count = blockMap(image_data,blockMapArray, depth, rows, cols, bDepth, bRow, bCols);
 
     RwnmrConfig rwnmr_config =  RWNMR(RWNMR_object);
     UctConfig uCT_Config = UCT(UCT_object);
@@ -520,7 +518,7 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     rwnmrApp app;
 
     //build the simulation
-    app.buildEssentials(rwnmr_config, uCT_Config, blockMapArray, rows,cols,depth);
+    app.buildEssentials(rwnmr_config, uCT_Config, blockMapArray, rows,cols,depth, count);
 
     //run the simulation and return the results
     NMR_cpmg cpmg = app.CPMG(cpmg_config);
