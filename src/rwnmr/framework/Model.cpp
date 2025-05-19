@@ -3,7 +3,7 @@
 std::mt19937 Model::_rng;
 
 Model::Model(RwnmrConfig _rwNMR_config, 
-                               UctConfig _uCT_config, std::vector<CustomMat>  _image) :   rwNMR_config(_rwNMR_config),
+                               UctConfig _uCT_config, uint64_t *blockMap) :   rwNMR_config(_rwNMR_config),
                                                          uCT_config(_uCT_config),
                                                          simulationSteps(0),
                                                          numberOfEchoes(0),
@@ -17,7 +17,7 @@ Model::Model(RwnmrConfig _rwNMR_config,
                                                          walkerOccupancy(-1.0),
                                                          voxelDivisionApplied(false),
                                                          histogram(),
-                                                         image(_image)
+                                                         blockMap(blockMap)
 {
     // init vector objects
     vector<CustomMat> binaryMap();
@@ -195,10 +195,14 @@ void Model::buildTimeFramework(double _time)
     this->simulationSteps = this->numberOfEchoes * this->stepsPerEcho;
 }
 
-void Model::readImage()
+void Model::countPores(int imgRows, int imgCols, int imgDepth)
 {
-    (*this).loadImage();
-    (*this).createBitBlockMap();
+    
+    cout << "- setting (bit)block map dimensions:" << endl;
+    this->bitBlock = new BitBlock();
+    this->bitBlock->setBlockMapDimensions_3D(imgRows,imgCols,imgDepth);
+    this->bitBlock->setBlocks(this->blockMap);
+
     (*this).countPoresInBitBlock();
     (*this).countInterfacePoreMatrix();
 }
@@ -364,36 +368,6 @@ void Model::save(string _otherDir)
     cout << " in " << time << " seconds." << endl; 
 }
 
-void Model::loadImage()
-{
-    double time = omp_get_wtime();
-    cout << "- loading rock image from list:" << endl;
-
-    // reserve memory for binaryMap
-    uint numberOfImages = this->uCT_config.getSlices();
-    this->binaryMap.reserve(numberOfImages);
-
-    // create progress bar object
-    ProgressBar pBar((double) numberOfImages);
-    for (uint slice = 0; slice < numberOfImages; slice++)
-    {
-
-        // if (rockImages.empty())
-        // {
-        //     cout << "Error: No image data in file " << currentImagePath << endl;
-        //     exit(1);
-        // }
-
-        (*this).createBinaryMap(this->image.at(slice),slice);
-
-        // Update progress bar
-        pBar.update(1);
-        pBar.print();
-    }
-
-    time = omp_get_wtime() - time;
-    cout << " in " << time << " seconds." << endl;
-}
 
 
 void Model::createBinaryMap(CustomMat _rockImage, uint slice)
@@ -418,25 +392,13 @@ void Model::createBinaryMap(CustomMat _rockImage, uint slice)
     }    
 }
 
-void Model::createBitBlockMap()
-{
-    double time = omp_get_wtime();
-    cout << "- creating (bit)block map:" << endl;
-    if(this->bitBlock == NULL)
-        this->bitBlock = new BitBlock();
-    this->bitBlock->createBlockMap(this->binaryMap, 0);
 
-    // update image info
-    this->binaryMap.clear();
-
-    time = omp_get_wtime() - time;
-    cout << " in " << time << " seconds." << endl;
-}
 
 void Model::countPoresInBitBlock()
 {
     double time = omp_get_wtime(); 
-    cout << "- counting pore voxels in rock image:" << endl;
+    std::cout << this->bitBlock->getImageDepth() << this->bitBlock->getImageColumns() ;
+    std::cout << "- counting pore voxels in rock image:" << std::endl;
 
     // consider 2 or 3 dimensions
     bool dim3 = false; 
@@ -466,10 +428,12 @@ void Model::countPoresInBitBlock()
                 }
 
                 // now check if bit is pore or wall
+               
                 if (!this->bitBlock->checkIfBitIsWall(block, bit))
                 {
                     this->numberOfPores++;
                 }
+
             }
         } 
 

@@ -54,7 +54,7 @@ public:
     string getArgsCommand(uint idx) { return this->args.getCommand(idx); }
     string getArgsPath(uint idx) { return this->args.getPath(idx); }
     
-    void buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, std::vector<CustomMat>  image);
+    void buildEssentials(RwnmrConfig rwNMR_Config,UctConfig uCT_Config, uint64_t *blockMap, int imgRows, int imgCols, int imgDepth);
     void exec();    
 
     NMR_cpmg CPMG(CpmgConfig cpgm_config);

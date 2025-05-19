@@ -21,9 +21,9 @@ class UctConfig:
 
             img_array.append(img)
         img_array = np.array(img_array)
-        for pixel in img_array:
-            pixel[pixel != cor_poro] = 1
-            pixel[pixel == cor_poro] = 0
+        for img in img_array:
+            img[img != cor_poro] = 1
+            img[img == cor_poro] = 0
         print("Images binarized")
         self.img_array = img_array
         return img_array

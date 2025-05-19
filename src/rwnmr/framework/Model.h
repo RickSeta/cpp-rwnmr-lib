@@ -61,7 +61,7 @@ private:
     string boundaryCondition;
     int voxelDivision;
     bool voxelDivisionApplied;
-    std::vector<CustomMat>  image;
+    uint64_t *blockMap;
 
     // Collision histogram
     CollisionHistogram histogram;
@@ -70,7 +70,7 @@ private:
 public:
     // NMR_3D methods:
     // default constructors
-    Model(RwnmrConfig _rwNMR_config, UctConfig _uCT_config, std::vector<CustomMat>  image);
+    Model(RwnmrConfig _rwNMR_config, UctConfig _uCT_config,  uint64_t *blockMap);
 
     // copy constructors
     //  copy constructor
@@ -94,7 +94,6 @@ public:
         this->walkerOccupancy = _otherSimulation.walkerOccupancy;
         this->numberOfWalkers = _otherSimulation.numberOfWalkers;
         this->walkerSamples = _otherSimulation.walkerSamples;
-        this->image = _otherSimulation.image;
 
         this->pores = _otherSimulation.pores;
         this->walkersIdxList = _otherSimulation.walkersIdxList;
@@ -232,10 +231,8 @@ public:
 
     // Class methods:
     // read
-    void readImage();
-    void loadImage();
+    void countPores(int imgRows, int imgCols, int imgDepth);
     void createBinaryMap(CustomMat _rockImage, uint slice);
-    void createBitBlockMap();
     void initSeed(bool _flag = false);
     void initGiromagneticRatio(double _gamma, string _unit = "rad");
     void initStepLength();
@@ -261,12 +258,6 @@ public:
     {
         if (this->pores.size() > 0)
             this->pores.clear();
-    }
-    void addImage(const CustomMat& mat) {
-        this->image.push_back(mat);
-    }
-    CustomMat& getImage(size_t index) {
-        return this->image.at(index);
     }
     void updateWalkerOccupancy();
     void createWalkersIdxList();

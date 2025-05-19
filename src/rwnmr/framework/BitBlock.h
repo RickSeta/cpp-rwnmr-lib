@@ -90,11 +90,11 @@ public:
         }
     }
 
-    void createBlockMap(vector<CustomMat> &_binaryMap, uchar _poreColor);
+    void createBlockMap(int rows, int cols ,int depth);
     void setBlockMapDimensions_2D(CustomMat &_binaryMap);
     void createBitBlocksArray_2D(CustomMat &_binaryMap, uchar poreColor);
     void saveBitBlockArray_2D(string filename);
-    void setBlockMapDimensions_3D(vector<CustomMat> &_binaryMap);
+    void setBlockMapDimensions_3D(int rows, int cols, int depth);
     void createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar poreColor);
     void saveBitBlockArray_3D(string filename);
 

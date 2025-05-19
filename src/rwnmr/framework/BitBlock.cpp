@@ -16,21 +16,19 @@ BitBlock::BitBlock(const BitBlock &_bitBlock)
     this->blockDepth = _bitBlock.blockDepth;
 }
 
-void BitBlock::createBlockMap(vector<CustomMat> &_binaryMap, uchar poreColor)
+void BitBlock::createBlockMap(int rows, int cols, int depth)
 {
-    cout << "createBlockMap" << endl;
-    if (_binaryMap.size() == 1)
-    {
-        setBlockMapDimensions_2D(_binaryMap[0]);
-        createBitBlocksArray_2D(_binaryMap[0], poreColor);
-    }
-    else
-    {
-        cout << "3D block" << endl;
-        setBlockMapDimensions_3D(_binaryMap);
-        cout << "3D block dimensions set" << endl;
-        createBitBlocksArray_3D(_binaryMap, poreColor);
-    }
+    // if (_binaryMap.size() == 1)
+    // { remove
+    //     setBlockMapDimensions_2D(_binaryMap[0]);
+    //     createBitBlocksArray_2D(_binaryMap[0], poreColor);
+    // }
+    // else
+    // {
+    cout << "3D block" << endl;
+    setBlockMapDimensions_3D(rows, cols, depth);
+    cout << "3D block dimensions set" << endl;
+    // }
 }
 
 // 2D block
@@ -134,34 +132,36 @@ void BitBlock::saveBitBlockArray_2D(string filename)
 }
 
 // 3D block
-void BitBlock::setBlockMapDimensions_3D(vector<CustomMat> &_binaryMap)
+void BitBlock::setBlockMapDimensions_3D(int rows, int cols, int depth)
 {
-    (*this).setImageRows(_binaryMap[0].getRows());
-    (*this).setImageColumns(_binaryMap[0].getCols());
-    (*this).setImageDepth(_binaryMap.size());
+    (*this).setImageRows(rows);
+    (*this).setImageColumns(cols);
+    (*this).setImageDepth(depth);
 
-    (*this).setBlockRows((*this).getImageRows() / ROWSPERBLOCK3D);
-    if ((*this).getImageRows() % ROWSPERBLOCK3D != 0)
+    (*this).setBlockRows(rows / ROWSPERBLOCK3D);
+    if (rows % ROWSPERBLOCK3D != 0)
     {
-        (*this).setBlockRows((*this).getBlockRows() + 1);
+        (*this).setBlockRows((*this).getBlockRows());
     }
 
-    (*this).setBlockColumns((*this).getImageColumns() / COLUMNSPERBLOCK3D);
-    if ((*this).getImageColumns() % COLUMNSPERBLOCK3D != 0)
+    (*this).setBlockColumns(cols / COLUMNSPERBLOCK3D);
+    if (cols % COLUMNSPERBLOCK3D != 0)
     {
-        (*this).setBlockColumns((*this).getBlockColumns() + 1);
+        (*this).setBlockColumns((*this).getBlockColumns());
     }
 
-    (*this).setBlockDepth((*this).getImageDepth() / DEPTHPERBLOCK3D);
-    if ((*this).getImageDepth() % DEPTHPERBLOCK3D != 0)
+    (*this).setBlockDepth(depth / DEPTHPERBLOCK3D);
+    if (depth % DEPTHPERBLOCK3D != 0)
     {
-        (*this).setBlockDepth((*this).getBlockDepth() + 1);
+        (*this).setBlockDepth((*this).getBlockDepth());
     }
 
     (*this).setNumberOfBlocks((*this).getBlockRows() * (*this).getBlockColumns() * (*this).getBlockDepth());
-    
-    // alloc memory for bitblocks
-    (*this).allocBlocks((*this).getNumberOfBlocks());
+    cout << "block infos" << endl;
+    cout << (*this).getNumberOfBlocks() << endl;
+    cout << (*this).getBlockRows() << endl;
+    cout << (*this).getBlockColumns() << endl;
+    cout << (*this).getBlockDepth() << endl;
 }
 
 void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar poreColor)
@@ -173,57 +173,7 @@ void BitBlock::createBitBlocksArray_3D(vector<CustomMat> &_binaryMap, uchar pore
     cout << "Block rows: " << (*this).getBlockRows() << endl;
     cout << "Block columns: " << (*this).getBlockColumns() << endl;
 
-    // Calculate total number of blocks for progress bar
-    uint totalBlocks = (*this).getBlockDepth() * (*this).getBlockRows() * (*this).getBlockColumns();
-    ProgressBar pBar((double)totalBlocks);
-    uint processedBlocks = 0;
-
-    for (int block_z = 0; block_z < (*this).getBlockDepth(); block_z++)
-    {
-        for (int block_y = 0; block_y < (*this).getBlockRows(); block_y++)
-        {
-            for (int block_x = 0; block_x < (*this).getBlockColumns(); block_x++)
-            {
-                // initialize block
-                newBlock = 0;
-
-                for (int bit_z = 0; bit_z < DEPTHPERBLOCK3D; bit_z++)
-                {
-                    for (int bit_y = 0; bit_y < ROWSPERBLOCK3D; bit_y++)
-                    {
-                        for (int bit_x = 0; bit_x < COLUMNSPERBLOCK3D; bit_x++)
-                        {
-                            uint mapPixel_x = (block_x * COLUMNSPERBLOCK3D) + bit_x;
-                            uint mapPixel_y = (block_y * ROWSPERBLOCK3D) + bit_y;
-                            uint mapPixel_z = (block_z * DEPTHPERBLOCK3D) + bit_z;
-
-                            // check if pixel is inside image resolution
-                            if (mapPixel_x < (*this).getImageColumns() && mapPixel_y < (*this).getImageRows() && mapPixel_z < (*this).getImageDepth())
-                            {
-                                Pos3d pixel(mapPixel_x, mapPixel_y, mapPixel_z);
-
-                                if (!pixel.isPore(_binaryMap, poreColor))
-                                {
-                                    int bit = (bit_z * (ROWSPERBLOCK3D * COLUMNSPERBLOCK3D)) // depth
-                                              + (bit_y * COLUMNSPERBLOCK3D)                  // height
-                                              + bit_x;                                       // width
-                                    newBlock |= (1ull << bit);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // assign new block to blocks array
-                (*this).setBlock(newBlock, IDX2C_3D(block_x, block_y, block_z, (*this).getBlockColumns(), (*this).getBlockRows()));
-                
-                // Update progress after each block is processed
-                processedBlocks++;
-                pBar.update(1);
-                pBar.print();
-            }
-        }
-    }
+    
 }
 
 void BitBlock::saveBitBlockArray_3D(string filename)

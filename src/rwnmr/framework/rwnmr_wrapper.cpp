@@ -383,8 +383,8 @@ static PyObject* BitBlockMethod(PyObject* self, PyObject* args){
 
     BitBlock bitBlock;
     BitBlock bitBlock2;
-    bitBlock.createBlockMap(binaryMap, 0);
-    bitBlock2.createBlockMap(binaryMap2, 0);
+    // bitBlock.createBlockMap(binaryMap, 0);
+    // bitBlock2.createBlockMap(binaryMap2, 0);
     printf("rows: %i\n cols: %i \n depth: %i \n", rows,cols, depth);
     bitBlock2.saveBitBlockArray_2D("bitblock2D.txt");
     bitBlock.saveBitBlockArray_3D("bitblock3D.txt");
@@ -435,6 +435,55 @@ PyObject* vector_to_pylist(const std::vector<double>& vec) {
     }
     return list;
 }
+
+
+// (ponteiro binmap, pontei vetor blockmap, int depth, int rows, int cols, int* blockSize, int* blockSize2, int* blockSize3)
+// uint8_t* binmap;
+// uint64_t* blockMap;
+// uint32_t* depth;
+// uint32_t* rows; uint32_t* cols,  uint32_t* bDepth, uint32_t* blockRows, uint32_t* blockCols;
+
+uint64_t array[8 * 8 * 8] = {0};
+
+
+
+
+void blockMap(uint8_t* binmap, uint64_t* blockMap, uint32_t depth, uint32_t rows, uint32_t cols,  uint32_t bDepth, uint32_t bRow, uint32_t bCols){
+    printf("entrouuu Block Map:\n");
+    int totalBlocks = bDepth * bRow * bCols; 
+
+    printf("totalBlocks: %d\n", totalBlocks);
+    for(int blockId = 0; blockId < totalBlocks; blockId++){
+        // printf("Block ID: %d\n", blockId);
+
+        int blockMapz = blockId / (bCols*bRow);
+        int blockMapy = (blockId / bCols) % bRow;
+        int blockMapx = blockId % bCols;
+
+
+        for(int z = 0; z < 4; z++){
+            for(int y = 0; y < 4; y++){
+                for(int x = 0; x < 4; x++){
+                    int imx = blockMapx*4 + x;
+                    int imy = blockMapy*4 + y;
+                    int imz = blockMapz*4 + z;
+
+                    int img_id = imx + (imy* cols) + (imz * cols * rows);
+
+                    int color = binmap[img_id];
+                    // printf("Block ID: %d, Color: %d, img_id: %d\n", blockId, color, img_id);
+
+                    blockMap[blockId] = (blockMap[blockId] << 1) + color;
+
+
+                }
+            }
+        }
+            
+    }
+
+}
+
 static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     PyObject* CPMG_object;
     PyObject* RWNMR_object;
@@ -448,27 +497,36 @@ static PyObject* CPMG_EXECUTE(PyObject* self, PyObject* args){
     }
     //Image retrieval
     uint8_t* dados = (uint8_t*)PyArray_DATA(image_object);
-    std::vector<CustomMat> binaryMap;
+    std::vector<CustomMat> image;
     for (int d = 0; d < depth; ++d) {
         uint8_t* slice_data = dados + (d * rows * cols);
         std::vector<uint8_t> vec_data(slice_data, slice_data + (rows * cols));
         CustomMat data = CustomMat(rows, cols, vec_data);
-        binaryMap.push_back(data);
+        image.push_back(data);
     }
+
+
+    uint32_t bDepth = depth / 4;
+    uint32_t bRow = rows / 4;
+    uint32_t bCols = cols / 4;
+    cout << "bDepth: " << bDepth << " bRow: " << bRow << " bCols: " << bCols << endl;
+    uint64_t* blockMapArray = (uint64_t*)malloc(bDepth * bRow * bCols * sizeof(uint64_t));
+    blockMap(dados,blockMapArray, depth, rows, cols, bDepth, bRow, bCols);
+    
+
     RwnmrConfig rwnmr_config =  RWNMR(RWNMR_object);
     UctConfig uCT_Config = UCT(UCT_object);
     CpmgConfig cpmg_config = CPMG(CPMG_object);
     rwnmrApp app;
 
     //build the simulation
-    app.buildEssentials(rwnmr_config, uCT_Config, binaryMap);
+    app.buildEssentials(rwnmr_config, uCT_Config, blockMapArray, rows,cols,depth);
 
     //run the simulation and return the results
     NMR_cpmg cpmg = app.CPMG(cpmg_config);
     PyObject* amps = vector_to_pylist(cpmg.getSignalAmps());
     PyObject* times = vector_to_pylist(cpmg.getSignalTimes());
     PyObject* result = PyTuple_Pack(2, times, amps);
-
     return result;
 };
 
